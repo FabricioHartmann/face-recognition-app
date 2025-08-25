@@ -13,6 +13,7 @@
     "@chakra-ui/react": "^2.10.9",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "face-api.js": "^0.22.2",
     "framer-motion": "^10.18.0",
     "react": "^18.3.1",

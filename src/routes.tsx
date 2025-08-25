@@ -10,6 +10,6 @@ export interface AppRoute {
 
 export const appRoutes: AppRoute[] = [
   { path: "/", element: <Home /> },
-  { path: "/dashboard", element: <ImageRegister /> },
-  { path: "/login", element: <Scanner /> },
+  { path: "/register", element: <ImageRegister /> },
+  { path: "/scanner", element: <Scanner /> },
 ];
