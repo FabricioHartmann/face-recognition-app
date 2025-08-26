@@ -5,7 +5,7 @@ export const modelsToastVariants: Record<
   UseToastOptions
 > = {
   loading: {
-    id: "faceapi-loading",
+    id: "models-loading",
     title: "Carregando modelos...",
     description: "Aguarde enquanto os modelos de reconhecimento facial são carregados.",
     status: "info",
@@ -14,7 +14,7 @@ export const modelsToastVariants: Record<
     position: "bottom-right",
   },
   success: {
-    id: "faceapi-success",
+    id: "models-success",
     title: "Modelos carregados!",
     description: "O sistema de reconhecimento facial está pronto.",
     status: "success",
@@ -23,7 +23,7 @@ export const modelsToastVariants: Record<
     position: "bottom-right",
   },
   error: {
-    id: "faceapi-error",
+    id: "models-error",
     title: "Erro ao carregar modelos",
     description: "Verifique sua conexão ou tente novamente.",
     status: "error",

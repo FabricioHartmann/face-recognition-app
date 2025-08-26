@@ -1,20 +1,25 @@
 import { useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
-import { useFaceApiModels } from "../useFaceApiModels/useFaceApiModels.hook";
+import { useFaceApiModels } from "./useFaceApiModels.hook";
 import { modelsToastVariants } from "../../utils/faceApiModelsToastsVariants";
 
-export function useFaceApiModelsToasts() {
+export function useModelsToasts() {
   const toast = useToast();
   const modelsReady = useFaceApiModels();
 
   useEffect(() => {
     console.log(modelsReady);
-    if (modelsReady === "loading") toast(modelsToastVariants.loading);
-    else if (modelsReady === "success") {
-      toast.close("faceapi-loading");
+    if (modelsReady === "loading") {
+      toast(modelsToastVariants.loading);
+      return;
+    }
+    if (modelsReady === "success") {
+      toast.close("models-loading");
       toast(modelsToastVariants.success);
-    } else if (modelsReady === "error") {
-      toast.close("faceapi-loading");
+      return;
+    }
+    if (modelsReady === "error") {
+      toast.close("models-loading");
       toast(modelsToastVariants.error);
     }
   }, [modelsReady, toast]);

@@ -4,11 +4,13 @@ import FaceDetect from "../../components/FaceDetect/FaceDetect.component";
 import * as faceapi from "face-api.js";
 import { useImageStore } from "../../store/imageStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../../components/ui/toast";
+import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
 
 export function Scanner() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { setScannedDescriptor, clearScannedDescriptor } = useImageStore();
+  const { setScannedDescriptor } = useImageStore();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -26,7 +28,7 @@ export function Scanner() {
       .withFaceDescriptor();
 
     if (!detection) {
-      alert("Nenhum rosto detectado na imagem.");
+      toast(detectionToastVariants.undetected);
       return;
     }
 
@@ -41,10 +43,6 @@ export function Scanner() {
       inputRef.current.value = "";
     }
   }
-
-  const deleteImageAndDescriptor = () => {
-    clearScannedDescriptor();
-  };
 
   const goToRegisterPage = () => {
     navigate('/register')
