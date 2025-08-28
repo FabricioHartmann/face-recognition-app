@@ -4,7 +4,6 @@ import type { ImageUploaderProps } from "./types";
 import { useImageStore } from "../../store/imageStore";
 
 export default function ImageUploader({ onImageChange }: ImageUploaderProps) {
-  const setImageSrc = useImageStore((state) => state.setImageSrc);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -14,8 +13,6 @@ export default function ImageUploader({ onImageChange }: ImageUploaderProps) {
     const img = document.createElement("img") as HTMLImageElement;
     img.onload = () => onImageChange(img);
     img.src = URL.createObjectURL(file);
-
-    setImageSrc(img.src);
 
     if (inputRef.current) {
       inputRef.current.value = "";

@@ -1,45 +1,38 @@
-import { Flex, Heading, Text, Button, VStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom"
-
+import { Flex, Heading, Text, Button, Box } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
+import { RenderIf } from "../../components/RenderIf";
 
 export function Home() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const goToRegisterPage = () => {
-    navigate("/register")
-  }
-
-  const goToScannerPage = () => {
-    navigate("/scanner")
-  }
+    navigate("/register");
+  };
 
   return (
-    <Flex minH="100vh" align="center" justify="center" bg="gray.50" px={4}>
-      <VStack spacing={6} maxW="md" textAlign="center">
-        <Heading as="h1" size="xl" bg="teal" bgClip="text">
-          Reconhecimento Facial
+    <Flex direction="column" minH="100vh" p={4}>
+      <Flex direction="column" flex="1" justify="center" align="center">
+        <Heading textAlign="center" as="h1" size="xl">
+          Face Recon
         </Heading>
-
-        <Text fontSize="lg" color="gray.600">
-          Registre uma imagem para começar
+        <Text mt={4} textAlign="center" color="#b3b3b3ff">
+          Aplicativo simples para testar reconhecimento facial com face-api
         </Text>
-        <Flex direction='column' gap='4'>
-          <Button
-            colorScheme="teal"
-            transition="all 0.2s"
-            onClick={goToRegisterPage}
-          >
-            Registrar imagem
+        <RenderIf condition={!isMobile}>
+          <Button onClick={goToRegisterPage} w="164px" rounded="l1" mt={8}>
+            Iniciar
           </Button>
-          <Button
-            colorScheme="teal"
-            transition="all 0.2s"
-            onClick={goToScannerPage}
-          >
-            Reconhecer rosto
+        </RenderIf>
+      </Flex>
+      <RenderIf condition={isMobile}>
+        <Box w="100%">
+          <Button onClick={goToRegisterPage} w="100%" rounded="l1">
+            Iniciar
           </Button>
-        </Flex>
-      </VStack>
+        </Box>
+      </RenderIf>
     </Flex>
   );
 }

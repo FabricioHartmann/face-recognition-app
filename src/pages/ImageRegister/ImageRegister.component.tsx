@@ -8,7 +8,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import * as faceapi from "face-api.js";
-import ImageUploader from "../../components/ImageUploader";
+import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { useImageStore } from "../../store/imageStore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,19 +19,20 @@ export function ImageRegister() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const {
-    imageSrc,
+    registeredImageSrc,
     setRegisteredDescriptor,
-    deleteImage,
+    setRegisteredImageSrc,
+    deleteRegisteredImageSrc,
     clearRegisteredDescriptor,
   } = useImageStore();
 
   const deleteImageAndDescriptor = () => {
-    deleteImage();
+    deleteRegisteredImageSrc();
     clearRegisteredDescriptor();
   };
 
   const goToScanPage = () => {
-    navigate('/scanner')
+    navigate("/scanner");
   };
 
   const handleImageChange = async (img: HTMLImageElement) => {
@@ -49,7 +50,8 @@ export function ImageRegister() {
       }
       const descriptorArray = Array.from(detection.descriptor);
       await setRegisteredDescriptor(descriptorArray);
-      toast(detectionToastVariants.detected)
+      toast(detectionToastVariants.detected);
+      setRegisteredImageSrc(img.src);
     } catch (err) {
       console.error(err);
       toast(detectionToastVariants.error);
@@ -59,39 +61,41 @@ export function ImageRegister() {
   };
 
   return (
-    <Box p={8}>
-      <Heading>Cadastro de Imagem</Heading>
-      <Text mt={4}>Tela para registrar imagens faciais.</Text>
-      <ImageUploader onImageChange={handleImageChange} />
-      {loading && (
-        <Flex mt={4} align="center" gap={2}>
-          <Spinner size="sm" />
-          <Text fontSize="sm" color="gray.500">
-            Salvando descriptor...
-          </Text>
-        </Flex>
-      )}
-      {imageSrc && (
-        <Box>
-          <Image width="240px" src={imageSrc} />
-          <Button
-            onClick={deleteImageAndDescriptor}
-            mt={4}
-            variant="ghost"
-            color="red"
-          >
-            Remover foto
-          </Button>
-          <Button
-            onClick={goToScanPage}
-            mt={4}
-            variant="outline"
-            color="teal"
-          >
-            Escanear
-          </Button>
-        </Box>
-      )}
-    </Box>
+    <Flex direction="column" minH="100vh" p={4}>
+      <Flex direction="column" flex="1" justify="center" align="center" gap={4}>
+        <Heading textAlign="center" as="h1" size="lg">
+          Registro de imagem
+        </Heading>
+        {!!registeredImageSrc?.length ? (
+          <Box>
+            <Image width="240px" src={registeredImageSrc} mb={4} />
+            <Flex direction="column" gap={4}>
+              <Button
+                onClick={deleteImageAndDescriptor}
+                w="100%"
+                rounded="l1"
+                borderColor='red'
+                color="red"
+              >
+                Remover foto
+              </Button>
+              <Button onClick={goToScanPage} w="100%" rounded="l1">
+                Ir para Scanner
+              </Button>
+            </Flex>
+          </Box>
+        ) : (
+          <ImageUploader onImageChange={handleImageChange} />
+        )}
+        {loading && (
+          <Flex mt={4} align="center" gap={2}>
+            <Spinner size="sm" />
+            <Text fontSize="sm" color="gray.500">
+              Salvando descriptor...
+            </Text>
+          </Flex>
+        )}
+      </Flex>
+    </Flex>
   );
 }

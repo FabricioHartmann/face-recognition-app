@@ -1,4 +1,4 @@
-import type { UseToastOptions } from "@chakra-ui/react"
+import type { UseToastOptions } from "@chakra-ui/react";
 
 export const modelsToastVariants: Record<
   "loading" | "success" | "error",
@@ -7,11 +7,12 @@ export const modelsToastVariants: Record<
   loading: {
     id: "models-loading",
     title: "Carregando modelos...",
-    description: "Aguarde enquanto os modelos de reconhecimento facial são carregados.",
+    description:
+      "Aguarde enquanto os modelos de reconhecimento facial são carregados.",
     status: "info",
     duration: null,
     isClosable: false,
-    position: "bottom-right",
+    position: "top-right",
   },
   success: {
     id: "models-success",
@@ -20,7 +21,7 @@ export const modelsToastVariants: Record<
     status: "success",
     duration: 3000,
     isClosable: true,
-    position: "bottom-right",
+    position: "top-right",
   },
   error: {
     id: "models-error",
@@ -29,6 +30,6 @@ export const modelsToastVariants: Record<
     status: "error",
     duration: 5000,
     isClosable: true,
-    position: "bottom-right",
+    position: "top-right",
   },
-}
+};
