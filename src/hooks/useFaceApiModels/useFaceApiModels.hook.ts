@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import * as faceapi from "face-api.js"
-
-type FaceApiStatus = "idle" | "loading" | "success" | "error"
+import type { FaceApiStatus } from "./useFaceApiModels.types"
 
 export function useFaceApiModels() {
   const [status, setStatus] = useState<FaceApiStatus>("idle")
