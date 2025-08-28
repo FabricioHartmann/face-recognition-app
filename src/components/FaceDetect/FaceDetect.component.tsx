@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import { Box, Image, Text } from "@chakra-ui/react";
 import { useImageStore } from "../../store/imageStore/imageStore.store";
-import { useFaceCompare } from "../../hooks/useCompareFaces";
+import { useFaceCompare } from "../../hooks/useCompareFaces/useCompareFaces.hook";
 
 interface FaceDetectProps {
   imageSrc: string; // blob: ou base64

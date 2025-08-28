@@ -12,6 +12,8 @@ import ImageUploader from "../../components/ImageUploader";
 import { useImageStore } from "../../store/imageStore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../../components/ui/toast";
+import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
 
 export function ImageRegister() {
   const navigate = useNavigate();
@@ -41,17 +43,16 @@ export function ImageRegister() {
         .withFaceDescriptor();
 
       if (!detection) {
-        alert("Nenhum rosto detectado na imagem.");
+        toast(detectionToastVariants.undetected);
         deleteImageAndDescriptor();
         return;
       }
       const descriptorArray = Array.from(detection.descriptor);
       await setRegisteredDescriptor(descriptorArray);
-
-      console.log("Descritor salvo com sucesso!");
+      toast(detectionToastVariants.detected)
     } catch (err) {
       console.error(err);
-      alert("Erro ao processar a imagem.");
+      toast(detectionToastVariants.error);
     } finally {
       setLoading(false);
     }

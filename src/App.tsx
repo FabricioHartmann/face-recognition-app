@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { appRoutes } from "./routes"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { appRoutes } from "./routes";
+import { useModelsToasts } from "./hooks/useFaceApiModels/useModelsToasts.hook";
 
 function App() {
+  useModelsToasts();
   return (
     <BrowserRouter>
       <Routes>
@@ -10,7 +12,7 @@ function App() {
         ))}
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
