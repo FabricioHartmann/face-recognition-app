@@ -10,14 +10,17 @@ import {
 import * as faceapi from "face-api.js";
 import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { useImageStore } from "../../store/imageStore";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
+// import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
 
 export function ImageRegister() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  // const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const {
     registeredImageSrc,
     setRegisteredDescriptor,
@@ -48,6 +51,15 @@ export function ImageRegister() {
         deleteImageAndDescriptor();
         return;
       }
+      // console.log({ canvasRef: canvasRef.current });
+
+      // if (canvasRef.current) {
+      //   const dims = faceapi.matchDimensions(canvasRef.current, img, true);
+      //   const detections = await faceapi.detectAllFaces(img, faceApiOptions);
+
+      //   const resized = faceapi.resizeResults(detections, dims);
+      //   faceapi.draw.drawDetections(canvasRef.current, resized);
+      // }
       const descriptorArray = Array.from(detection.descriptor);
       await setRegisteredDescriptor(descriptorArray);
       toast(detectionToastVariants.detected);
@@ -74,7 +86,7 @@ export function ImageRegister() {
                 onClick={deleteImageAndDescriptor}
                 w="100%"
                 rounded="l1"
-                borderColor='red'
+                borderColor="red"
                 color="red"
               >
                 Remover foto
