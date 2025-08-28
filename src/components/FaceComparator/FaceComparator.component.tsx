@@ -4,15 +4,15 @@ import { Box, Image, Text } from "@chakra-ui/react";
 import { useImageStore } from "../../store/imageStore/imageStore.store";
 import { useFaceCompare } from "../../hooks/useCompareFaces/useCompareFaces.hook";
 
-interface FaceDetectProps {
+interface FaceComparatorProps {
   imageSrc: string; // blob: ou base64
   onDetectResult?: (hasFace: boolean) => void; // opcional
 }
 
-export default function FaceDetect({
+export function FaceComparator({
   imageSrc,
   onDetectResult,
-}: FaceDetectProps) {
+}: FaceComparatorProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function FaceDetect({
     imgRef.current
   );
 
-  async function detectFaces() {
+  async function detectFaceAndCompare() {
     const img = imgRef.current;
     if (!img) return;
 
@@ -70,6 +70,7 @@ export default function FaceDetect({
 
   useEffect(() => {
     console.log(imgRef.current, "segunda foto para comparar");
+    console.log(match)
     if (match !== null) {
       console.log(
         "Comparação com rosto salvo:",
@@ -85,11 +86,11 @@ export default function FaceDetect({
       <Image
         ref={imgRef}
         src={imageSrc}
-        alt="Imagem para detecção"
+        alt="Imagem comparada"
         width="240px"
         onLoad={() => {
           console.log(imgRef.current, "current");
-          detectFaces();
+          detectFaceAndCompare();
         }}
         crossOrigin="anonymous"
         display="block"

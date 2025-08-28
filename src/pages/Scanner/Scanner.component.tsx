@@ -1,80 +1,102 @@
-import { Box, Button, Flex, Heading, Input, Text } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import FaceDetect from "../../components/FaceDetect/FaceDetect.component";
+import { Box, Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import { FaceComparator } from "../../components/FaceComparator/FaceComparator.component";
 import * as faceapi from "face-api.js";
 import { useImageStore } from "../../store/imageStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
+import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 
 export function Scanner() {
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const { setScannedDescriptor } = useImageStore();
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const {
+    setScannedDescriptor,
+    setScannedImageSrc,
+    scannedImageSrc,
+    clearScannedDescriptor,
+    deleteScannedImageSrc,
+    clearRegisteredDescriptor,
+    deleteRegisteredImageSrc,
+  } = useImageStore();
+  const [loading, setLoading] = useState(false);
 
-  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  async function handleFileChange(img: HTMLImageElement) {
+    try {
+      setLoading(true);
 
-    const url = URL.createObjectURL(file);
-    setImageSrc(url);
+      const detection = await faceapi
+        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptor();
 
-    const img = await faceapi.fetchImage(url); // carrega a imagem
+      if (!detection) {
+        toast(detectionToastVariants.undetected);
+        return;
+      }
 
-    const detection = await faceapi
-      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withFaceDescriptor();
+      const descriptorArray = Array.from(detection.descriptor);
+      setScannedImageSrc(img.src);
+      setScannedDescriptor(descriptorArray);
 
-    if (!detection) {
-      toast(detectionToastVariants.undetected);
-      return;
-    }
-
-    const descriptorArray = Array.from(detection.descriptor);
-    setScannedDescriptor(descriptorArray);
-
-    console.log("descriptor array", descriptorArray);
-    console.log("detection", detection);
-
-    URL.revokeObjectURL(url);
-    if (inputRef.current) {
-      inputRef.current.value = "";
+      console.log("descriptor array", descriptorArray);
+      console.log("detection", detection);
+    } catch (err) {
+      console.error(err);
+      toast(detectionToastVariants.error);
+    } finally {
+      setLoading(false);
     }
   }
 
+  const removeImage = () => {
+    clearScannedDescriptor();
+    deleteScannedImageSrc();
+  };
+
   const goToRegisterPage = () => {
-    navigate('/register')
+    removeImage();
+    clearRegisteredDescriptor();
+    deleteRegisteredImageSrc();
+    navigate("/register");
   };
 
   return (
-    <Box p={8}>
-      <Heading>Scanner</Heading>
-      <Text mt={4}>Tela para escanear rostos em tempo real.</Text>
-      <Box width="340px">
-        <Text mt={4}>Escolha a foto a ser comparada</Text>
-        <Input
-          type="file"
-          accept="image/*"
-          capture="environment" // ativa câmera traseira no celular
-          onChange={handleFileChange}
-          mb={4}
-        />
-        {imageSrc && (
+    <Flex direction="column" minH="100vh" p={4}>
+      <Flex direction="column" flex="1" justify="center" align="center" gap={4}>
+        <Heading textAlign="center" as="h1" size="lg">
+          Scanner
+        </Heading>
+        {!!scannedImageSrc?.length ? (
           <Box>
-            <FaceDetect imageSrc={imageSrc} />
-            <Button
-              onClick={goToRegisterPage}
-              mt={4}
-              variant="outline"
-              color="teal"
-            >
-              Registrar nova foto
-            </Button>
+            <FaceComparator imageSrc={scannedImageSrc} />
+            <Flex direction="column" gap={4}>
+              <Button
+                onClick={removeImage}
+                w="100%"
+                rounded="l1"
+                borderColor="red"
+                color="red"
+              >
+                Remover foto
+              </Button>
+              <Button onClick={goToRegisterPage} w="100%" rounded="l1">
+                Testar novamente
+              </Button>
+            </Flex>
           </Box>
+        ) : (
+          <ImageUploader onImageChange={handleFileChange} />
         )}
-      </Box>
-    </Box>
+        {loading && (
+          <Flex mt={4} align="center" gap={2}>
+            <Spinner size="sm" />
+            <Text fontSize="sm" color="gray.500">
+              Comparando imagens...
+            </Text>
+          </Flex>
+        )}
+      </Flex>
+    </Flex>
   );
 }

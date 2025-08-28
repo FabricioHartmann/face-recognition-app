@@ -11,7 +11,7 @@ export const detectionToastVariants: Record<
     status: "success",
     duration: 5000,
     isClosable: true,
-    position: "bottom-right",
+    position: "top-right",
   },
   undetected: {
     id: "detection-fail",
@@ -20,7 +20,7 @@ export const detectionToastVariants: Record<
     status: "error",
     duration: 5000,
     isClosable: true,
-    position: "bottom-right",
+    position: "top-right",
   },
   error: {
     id: "detection-error",
@@ -29,6 +29,6 @@ export const detectionToastVariants: Record<
     status: "error",
     duration: 5000,
     isClosable: true,
-    position: "bottom-right",
+    position: "top-right",
   },
 };
