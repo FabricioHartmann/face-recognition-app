@@ -1,29 +1,31 @@
-import { useEffect, useState } from "react"
-import * as faceapi from "face-api.js"
+import { useEffect, useRef, useState } from "react";
 
-type FaceApiStatus = "idle" | "loading" | "success" | "error"
+type FaceApiStatus = "idle" | "loading" | "success" | "error";
 
-export function useFaceApiModels() {
-  const [status, setStatus] = useState<FaceApiStatus>("idle")
+export function useFaceApiModelWorker() {
+  const workerRef = useRef<Worker | null>(null);
+  const [status, setStatus] = useState<FaceApiStatus>("idle");
 
   useEffect(() => {
-    if (status !== "idle") return
+    workerRef.current = new Worker(
+      new URL("../../workers/modelsWorker.ts", import.meta.url),
+      { type: "module" }
+    );
 
-    const loadModels = async () => {
-      setStatus("loading")
-      try {
-        await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-          faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-          faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-        ])
-        setStatus("success")
-      } catch (err) {
-        setStatus("error")
+    workerRef.current.onmessage = (e) => {
+      const { action, success } = e.data;
+      if (action === "models-loaded") {
+        setStatus(success ? "success" : "error");
       }
-    }
-    loadModels()
-  }, [status])
+    };
 
-  return status
+    setStatus("loading");
+    workerRef.current.postMessage({ action: "load-models" });
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
+  return { status, worker: workerRef.current };
 }

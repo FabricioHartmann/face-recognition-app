@@ -1,10 +1,18 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Input, Text, VStack } from "@chakra-ui/react";
 import type { ImageUploaderProps } from "./ImageUploader.types";
+
+const worker = new Worker(
+  new URL("../../workers/modelsWorker.ts", import.meta.url),
+  {
+    type: "module",
+  }
+);
 
 export function ImageUploader({ onImageChange }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const resultRef = useRef(null);
 
   function handleFile(file: File) {
     const img = document.createElement("img") as HTMLImageElement;
