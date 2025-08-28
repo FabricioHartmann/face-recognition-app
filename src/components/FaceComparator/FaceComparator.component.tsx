@@ -3,6 +3,7 @@ import * as faceapi from "face-api.js";
 import { Box, Image, Text } from "@chakra-ui/react";
 import { useImageStore } from "../../store/imageStore/imageStore.store";
 import { useFaceCompare } from "../../hooks/useCompareFaces/useCompareFaces.hook";
+import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
 
 interface FaceComparatorProps {
   imageSrc: string; // blob: ou base64
@@ -44,11 +45,7 @@ export function FaceComparator({
         }
       });
 
-      const options = new faceapi.TinyFaceDetectorOptions({
-        inputSize: 416,
-        scoreThreshold: 0.3,
-      });
-      const detections = await faceapi.detectAllFaces(img, options);
+      const detections = await faceapi.detectAllFaces(img, faceApiOptions);
 
       const foundFace = detections.length > 0;
       setHasFace(foundFace);
@@ -70,7 +67,7 @@ export function FaceComparator({
 
   useEffect(() => {
     console.log(imgRef.current, "segunda foto para comparar");
-    console.log(match)
+    console.log(match);
     if (match !== null) {
       console.log(
         "Comparação com rosto salvo:",
@@ -95,7 +92,14 @@ export function FaceComparator({
         crossOrigin="anonymous"
         display="block"
       />
-      <Box as="canvas" ref={canvasRef} position="absolute" top={0} left={0} />
+      <Box
+        w="240px"
+        as="canvas"
+        ref={canvasRef}
+        position="absolute"
+        top={0}
+        left={0}
+      />
       {loading && <Text mt={2}>Analisando imagem...</Text>}
       {!loading && hasFace && <Text mt={2}>Rosto detectado!</Text>}
       {!loading && hasFace === false && (
@@ -103,15 +107,10 @@ export function FaceComparator({
           Nenhum rosto encontrado.
         </Text>
       )}
-      {match !== null && (
+      {!loading && match !== null && (
         <Text mt={2} color={match ? "green.500" : "red.500"}>
           {match ? "Rostos correspondem!" : "Rostos diferentes"} (Distância:{" "}
           {distance?.toFixed(4)})
-        </Text>
-      )}
-      {match === null && (
-        <Text mt={2} color={match ? "green.500" : "red.500"}>
-          Não deu match
         </Text>
       )}
     </Box>
