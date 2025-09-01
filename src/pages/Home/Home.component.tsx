@@ -1,4 +1,4 @@
-import { Flex, Heading, Text, Button, Box } from "@chakra-ui/react";
+import { Flex, Heading, Text, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 import { RenderIf } from "../../components/RenderIf";
@@ -27,11 +27,11 @@ export function Home() {
         </RenderIf>
       </Flex>
       <RenderIf condition={isMobile}>
-        <Box w="100%">
-          <Button onClick={goToRegisterPage} w="100%" rounded="l1">
+        <Flex w="100%" justifyContent={'center'}>
+          <Button onClick={goToRegisterPage} w={{ base: "100%", md: "164px" }} rounded="l1">
             Iniciar
           </Button>
-        </Box>
+        </Flex>
       </RenderIf>
     </Flex>
   );

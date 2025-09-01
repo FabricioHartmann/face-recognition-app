@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Spinner, Text, Image } from "@chakra-ui/react";
 import { useState } from "react";
 import { FaceComparator } from "../../components/FaceComparator/FaceComparator.component";
 import * as faceapi from "face-api.js";
@@ -6,14 +6,16 @@ import { useImageStore } from "../../store/imageStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
-import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
+import { MainLayout } from "../../components/MainLayout";
+import { RenderIf } from "../../components/RenderIf";
 
 export function Scanner() {
   const navigate = useNavigate();
   const {
+    scannedImageSrc,
+    registeredImageSrc,
     setScannedDescriptor,
     setScannedImageSrc,
-    scannedImageSrc,
     clearScannedDescriptor,
     deleteScannedImageSrc,
     clearRegisteredDescriptor,
@@ -62,12 +64,13 @@ export function Scanner() {
   };
 
   return (
-    <Flex direction="column" minH="100vh" p={4}>
+    <MainLayout title="Comparar imagem" onImageUpload={handleFileChange}>
       <Flex direction="column" flex="1" justify="center" align="center" gap={4}>
-        <Heading textAlign="center" as="h1" size="lg">
-          Scanner
-        </Heading>
-        {!!scannedImageSrc?.length ? (
+        <RenderIf condition={!scannedImageSrc?.length && !!registeredImageSrc}>
+          <Text marginX={8}>Imagem registrada:</Text>
+          <Image maxH="440px" src={registeredImageSrc} mb={4} />
+        </RenderIf>
+        <RenderIf condition={!!scannedImageSrc?.length}>
           <Box>
             <FaceComparator imageSrc={scannedImageSrc} />
             <Flex direction="column" gap={4}>
@@ -85,9 +88,7 @@ export function Scanner() {
               </Button>
             </Flex>
           </Box>
-        ) : (
-          <ImageUploader onImageChange={handleFileChange} />
-        )}
+        </RenderIf>
         {loading && (
           <Flex mt={4} align="center" gap={2}>
             <Spinner size="sm" />
@@ -97,6 +98,6 @@ export function Scanner() {
           </Flex>
         )}
       </Flex>
-    </Flex>
+    </MainLayout>
   );
 }

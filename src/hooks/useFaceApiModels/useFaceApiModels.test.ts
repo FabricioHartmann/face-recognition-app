@@ -14,7 +14,7 @@ vi.mock('face-api.js', () => ({
 
 describe('useFaceApiModels', () => {
   afterEach(() => {
-    vi.clearAllMocks() // limpa mocks entre testes
+    vi.clearAllMocks()
   })
 
   it('deve iniciar em idle e ir para loading imediatamente', () => {
@@ -26,8 +26,8 @@ describe('useFaceApiModels', () => {
       return status
     })
 
-    expect(firstValue).toBe('idle')       // primeiro valor
-    expect(result.current).toBe('loading') // valor atual após useEffect
+    expect(firstValue).toBe('idle')
+    expect(result.current).toBe('loading')
   })
 
   it('deve mudar para success quando modelos carregam', async () => {
@@ -39,7 +39,6 @@ describe('useFaceApiModels', () => {
   })
 
   it('deve mudar para error se algum modelo falhar', async () => {
-    // Sobrescreve apenas a próxima chamada do tinyFaceDetector
     ;(faceapi.nets.tinyFaceDetector.loadFromUri as any).mockRejectedValueOnce(new Error('fail'))
 
     const { result } = renderHook(() => useFaceApiModels())
