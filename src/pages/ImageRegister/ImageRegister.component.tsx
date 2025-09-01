@@ -10,10 +10,12 @@ import {
 import * as faceapi from "face-api.js";
 import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { useImageStore } from "../../store/imageStore";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
+import { MainLayout } from "../../components/MainLayout";
+import { RenderIf } from "../../components/RenderIf";
 // import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
 
 export function ImageRegister() {
@@ -73,15 +75,17 @@ export function ImageRegister() {
   };
 
   return (
-    <Flex direction="column" minH="100vh" p={4}>
+    <MainLayout title="Registrar imagem" onImageUpload={handleImageChange}>
       <Flex direction="column" flex="1" justify="center" align="center" gap={4}>
-        <Heading textAlign="center" as="h1" size="lg">
-          Registro de imagem
-        </Heading>
-        {!!registeredImageSrc?.length ? (
-          <Box>
-            <Image width="240px" src={registeredImageSrc} mb={4} />
-            <Flex direction="column" gap={4}>
+        <RenderIf condition={!registeredImageSrc?.length}>
+          <Box width='100%'>
+            <Text>Envie uma imagem para ser analisada</Text>
+          </Box>
+        </RenderIf>
+        <RenderIf condition={!!registeredImageSrc?.length}>
+          <Box width='100%'>
+            <Image maxH='440px' src={registeredImageSrc} mb={4} />
+            <Flex gap={4}>
               <Button
                 onClick={deleteImageAndDescriptor}
                 w="100%"
@@ -96,9 +100,7 @@ export function ImageRegister() {
               </Button>
             </Flex>
           </Box>
-        ) : (
-          <ImageUploader onImageChange={handleImageChange} />
-        )}
+        </RenderIf>
         {loading && (
           <Flex mt={4} align="center" gap={2}>
             <Spinner size="sm" />
@@ -108,6 +110,6 @@ export function ImageRegister() {
           </Flex>
         )}
       </Flex>
-    </Flex>
+    </MainLayout>
   );
 }

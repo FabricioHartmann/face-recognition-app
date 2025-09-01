@@ -2,7 +2,11 @@ import React, { useRef, useState } from "react";
 import { Box, Button, Input, Text, VStack } from "@chakra-ui/react";
 import type { ImageUploaderProps } from "./ImageUploader.types";
 
-export function ImageUploader({ onImageChange }: ImageUploaderProps) {
+export function ImageUploader({
+  onImageChange,
+  fullWidth,
+  fullHeight,
+}: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -33,12 +37,13 @@ export function ImageUploader({ onImageChange }: ImageUploaderProps) {
 
   return (
     <Box
-      maxW="280px"
+      width={fullWidth ? "100%" : 'auto'}
+      height={fullHeight ? "100%" : "220px"}
       p={4}
       border="2px dashed"
       borderColor={isDragging ? "teal.400" : "gray.300"}
-      borderRadius="xl"
       textAlign="center"
+      alignContent="center"
       transition="0.2s"
       onDragOver={(e) => {
         e.preventDefault();
@@ -47,7 +52,7 @@ export function ImageUploader({ onImageChange }: ImageUploaderProps) {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
     >
-      <VStack spacing={4}>
+      <VStack spacing={8}>
         <Text fontSize="sm" color="gray.500">
           Arraste uma imagem aqui ou clique no botão
         </Text>
