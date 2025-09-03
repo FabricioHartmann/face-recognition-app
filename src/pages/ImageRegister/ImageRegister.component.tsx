@@ -78,13 +78,15 @@ export function ImageRegister() {
     <MainLayout title="Registrar imagem" onImageUpload={handleImageChange}>
       <Flex direction="column" flex="1" justify="center" align="center" gap={4}>
         <RenderIf condition={!registeredImageSrc?.length}>
-          <Box width='100%'>
-            <Text>Envie uma imagem para ser analisada</Text>
+          <Box>
+            <Text>Registre uma imagem para iniciar o teste</Text>
           </Box>
         </RenderIf>
         <RenderIf condition={!!registeredImageSrc?.length}>
-          <Box width='100%'>
-            <Image maxH='440px' src={registeredImageSrc} mb={4} />
+          <Box width="100%">
+            <Flex justify="center">
+              <Image maxH="328px" src={registeredImageSrc} mb={4} />
+            </Flex>
             <Flex gap={4}>
               <Button
                 onClick={deleteImageAndDescriptor}

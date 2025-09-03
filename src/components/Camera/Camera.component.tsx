@@ -23,6 +23,7 @@ export function Camera() {
       direction="column"
       gap={4}
       justify="center"
+      width='100%'
       className="flex flex-col items-center gap-4"
     >
       <RenderIf condition={isLoading}>
@@ -31,9 +32,11 @@ export function Camera() {
         </Box>
       </RenderIf>
       <>
-        <Flex>
+        <Flex justify="center" align="center" bg="black">
           <Webcam
             audio={false}
+            height="280px"
+            width="280px"
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={{
