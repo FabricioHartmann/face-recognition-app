@@ -82,9 +82,10 @@ export function FaceComparator({
     <Box position="relative" display="inline-block">
       <Image
         ref={imgRef}
-        src={imageSrc}
+        src={imageSrc ?? ""}
         alt="Imagem comparada"
-        width="240px"
+        w="240px"
+        maxH="328px"
         onLoad={() => {
           console.log(imgRef.current, "current");
           detectFaceAndCompare();
