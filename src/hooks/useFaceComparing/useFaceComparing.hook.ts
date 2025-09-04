@@ -1,25 +1,27 @@
 import { useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
+import { useFaceApiModels } from "../useFaceApiModels";
 
-export function useFaceCompare(
-  savedDescriptor: number[] | null,
+export function useFaceComparing(
+  savedDescriptor: number[] | Float32Array<ArrayBufferLike>,
   imgElement: HTMLImageElement | null
 ) {
   const [match, setMatch] = useState<boolean | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
+  const status = useFaceApiModels();
 
   useEffect(() => {
-    if (!savedDescriptor || !imgElement) {
+    if (!savedDescriptor || !imgElement || status !== "success") {
       setMatch(null);
       setDistance(null);
       return;
     }
 
     async function compare() {
-      if (!imgElement || !savedDescriptor) return;
+      if (status !== "success") return
       try {
         const detection = await faceapi
-          .detectSingleFace(imgElement, new faceapi.TinyFaceDetectorOptions())
+          .detectSingleFace(imgElement as HTMLImageElement, new faceapi.TinyFaceDetectorOptions())
           .withFaceLandmarks()
           .withFaceDescriptor();
 
@@ -45,7 +47,7 @@ export function useFaceCompare(
     }
 
     compare();
-  }, [savedDescriptor, imgElement]);
+  }, [savedDescriptor, imgElement, status]);
 
-  return { match, distance };
+  return { match, distance, status };
 }
