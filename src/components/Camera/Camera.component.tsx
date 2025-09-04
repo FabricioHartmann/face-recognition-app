@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, useStatStyles } from "@chakra-ui/react";
 import { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { RenderIf } from "../RenderIf";
@@ -6,11 +6,17 @@ import { RenderIf } from "../RenderIf";
 export function Camera() {
   const webcamRef = useRef<Webcam>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [cameraError, setCameraError] = useState(false);
   const [isMirrored, setIsMirrored] = useState(false);
 
   const loadCamera = useCallback(() => {
     setIsLoading(false);
     console.log("carregou");
+  }, []);
+
+  const handleCameraError = useCallback(() => {
+    setIsLoading(false)
+    setCameraError(true);
   }, []);
 
   const capture = useCallback(() => {
@@ -23,16 +29,16 @@ export function Camera() {
       direction="column"
       gap={4}
       justify="center"
-      width='100%'
+      width="100%"
       className="flex flex-col items-center gap-4"
     >
-      <RenderIf condition={isLoading}>
+      <RenderIf condition={isLoading && cameraError}>
         <Box>
           <Text>Carregando câmera...</Text>
         </Box>
       </RenderIf>
-      <>
-        <Flex justify="center" align="center" bg="black">
+      <Flex direction="column">
+        <Flex justify="center" align="center" bg="black" maxH='240px'>
           <Webcam
             audio={false}
             height="280px"
@@ -45,7 +51,7 @@ export function Camera() {
             }}
             mirrored={isMirrored}
             onUserMedia={loadCamera}
-            onUserMediaError={() => console.log("Erro ao acessar câmera")}
+            onUserMediaError={handleCameraError}
           />
         </Flex>
         <Flex justify="space-between" gap={4}>
@@ -60,7 +66,7 @@ export function Camera() {
             Capturar
           </Button>
         </Flex>
-      </>
+      </Flex>
     </Flex>
   );
 }
