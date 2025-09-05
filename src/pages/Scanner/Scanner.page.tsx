@@ -27,6 +27,7 @@ import { Camera } from "../../components/Camera/Camera.component";
 import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { MainLayout } from "../../components/MainLayout";
 import { fileToBase64 } from "../../utils/imageManipulationUtils/fileToBase64";
+import { SourceSelector } from "../../components/SourceSelector";
 
 export function Scanner() {
   const navigate = useNavigate();
@@ -128,31 +129,7 @@ export function Scanner() {
             Nova imagem
           </Heading>
           <RenderIf condition={!scannedFile}>
-            <Tabs variant="enclosed" colorScheme="" isFitted>
-              <TabList mb="4">
-                <Tab>
-                  <Icon as={FiImage} mr={2} /> Galeria
-                </Tab>
-                <Tab>
-                  <Icon as={FiCamera} mr={2} /> Câmera
-                </Tab>
-              </TabList>
-
-              <TabPanels>
-                <TabPanel padding={0}>
-                  <ImageUploader
-                    fullHeight
-                    fullWidth
-                    onImageChange={handleFileChange}
-                  />
-                </TabPanel>
-                <TabPanel padding={0}>
-                  <Flex minH="280px">
-                    <Camera />
-                  </Flex>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+            <SourceSelector onImageChange={handleFileChange} />
           </RenderIf>
           <RenderIf condition={!!scannedFile}>
             <Box>

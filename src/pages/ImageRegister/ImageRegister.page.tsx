@@ -25,6 +25,7 @@ import { RenderIf } from "../../components/RenderIf";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../../components/Camera/Camera.component";
 import { fileToBase64 } from "../../utils/imageManipulationUtils/fileToBase64";
+import { SourceSelector } from "../../components/SourceSelector";
 // import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
 
 export function ImageRegister() {
@@ -49,7 +50,7 @@ export function ImageRegister() {
     navigate("/scanner");
   };
 
-  const handleImageChange = async (file: File) => {
+  const handleFileChange = async (file: File) => {
     try {
       const base64Img = await fileToBase64(file);
       const img = document.createElement("img");
@@ -107,32 +108,7 @@ export function ImageRegister() {
             Registrar imagem
           </Heading>
 
-          <Tabs variant="enclosed" colorScheme="" isFitted>
-            <TabList mb="4">
-              <Tab>
-                <Icon as={FiImage} mr={2} /> Galeria
-              </Tab>
-              <Tab>
-                <Icon as={FiCamera} mr={2} /> Câmera
-              </Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel padding={0}>
-                <ImageUploader
-                  fullHeight
-                  fullWidth
-                  onImageChange={handleImageChange}
-                />
-              </TabPanel>
-
-              <TabPanel padding={0}>
-                <Flex minH="280px">
-                  <Camera />
-                </Flex>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+          <SourceSelector onImageChange={handleFileChange} />
         </Box>
         <Flex
           direction="column"
