@@ -1,5 +1,5 @@
 export type ImageUploaderProps = {
-  onImageChange: (img: HTMLImageElement) => void;
+  onImageChange: (file: File) => void;
   fullWidth?: boolean,
   fullHeight?: boolean,
 }

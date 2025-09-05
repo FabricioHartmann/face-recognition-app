@@ -20,30 +20,40 @@ import * as faceapi from "face-api.js";
 import { useImageStore } from "../../store/imageStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
-import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
+import { detectionToastVariants } from "../../utils/faceApiUtils/faceApiDetectionToastsVariants";
 import { RenderIf } from "../../components/RenderIf";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../../components/Camera/Camera.component";
 import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { MainLayout } from "../../components/MainLayout";
+import { fileToBase64 } from "../../utils/imageManipulationUtils/fileToBase64";
 
 export function Scanner() {
   const navigate = useNavigate();
   const {
-    scannedImageSrc,
-    registeredImageSrc,
+    scannedFile,
+    registeredFile,
     setScannedDescriptor,
-    setScannedImageSrc,
+    setScannedFile,
     clearScannedDescriptor,
-    deleteScannedImageSrc,
+    deleteScannedFile,
     clearRegisteredDescriptor,
-    deleteRegisteredImageSrc,
+    deleteRegisteredFile,
   } = useImageStore();
   const [loading, setLoading] = useState(false);
 
-  async function handleFileChange(img: HTMLImageElement) {
+  async function handleFileChange(file: File) {
     try {
       setLoading(true);
+      const base64Img = await fileToBase64(file);
+      const img = document.createElement("img");
+      img.src = base64Img;
+      img.crossOrigin = "anonymous";
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Erro ao carregar imagem"));
+      });
 
       const detection = await faceapi
         .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
@@ -56,7 +66,7 @@ export function Scanner() {
       }
 
       const descriptorArray = Array.from(detection.descriptor);
-      setScannedImageSrc(img.src);
+      setScannedFile(img.src);
       setScannedDescriptor(descriptorArray);
 
       console.log("descriptor array", descriptorArray);
@@ -71,19 +81,19 @@ export function Scanner() {
 
   const removeImage = () => {
     clearScannedDescriptor();
-    deleteScannedImageSrc();
+    deleteScannedFile();
   };
 
   const goToRegisterPage = () => {
     removeImage();
     clearRegisteredDescriptor();
-    deleteRegisteredImageSrc();
+    deleteRegisteredFile();
     navigate("/register");
   };
 
   useEffect(() => {
-    console.log(scannedImageSrc, "src ");
-  }, [scannedImageSrc]);
+    console.log({ scannedFile });
+  }, [scannedFile]);
 
   return (
     <MainLayout>
@@ -92,14 +102,14 @@ export function Scanner() {
           <Heading size="md" mb={6} textAlign="center">
             Imagem registrada
           </Heading>
-          <RenderIf condition={!!registeredImageSrc}>
+          <RenderIf condition={!!registeredFile}>
             <Box width="100%">
               <Flex justify="center" bg={"black"} mb={4}>
-                <Image maxH="340px" src={registeredImageSrc} />
+                <Image maxH="340px" src={registeredFile} />
               </Flex>
             </Box>
           </RenderIf>
-          <RenderIf condition={!registeredImageSrc}>
+          <RenderIf condition={!registeredFile}>
             <Flex
               direction="column"
               justify="center"
@@ -117,7 +127,7 @@ export function Scanner() {
           <Heading size="md" mb={6} textAlign="center">
             Nova imagem
           </Heading>
-          <RenderIf condition={!scannedImageSrc}>
+          <RenderIf condition={!scannedFile}>
             <Tabs variant="enclosed" colorScheme="" isFitted>
               <TabList mb="4">
                 <Tab>
@@ -144,16 +154,16 @@ export function Scanner() {
               </TabPanels>
             </Tabs>
           </RenderIf>
-          <RenderIf condition={!!scannedImageSrc}>
+          <RenderIf condition={!!scannedFile}>
             <Box>
-              <FaceComparator imageSrc={scannedImageSrc} />
+              <FaceComparator imageSrc={scannedFile} />
             </Box>
           </RenderIf>
         </Box>
       </Flex>
       <Flex width="100%">
         <Flex width={"100%"} justify={"center"} mb={4}>
-          <RenderIf condition={!scannedImageSrc}>
+          <RenderIf condition={!scannedFile}>
             <Text>Envie uma imagem para comparar</Text>
           </RenderIf>
         </Flex>
