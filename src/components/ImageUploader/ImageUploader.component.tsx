@@ -6,6 +6,8 @@ export function ImageUploader({
   onImageChange,
   fullWidth,
   fullHeight,
+  textLabel,
+  buttonLabel,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -57,7 +59,7 @@ export function ImageUploader({
         textAlign="center"
       >
         <Text fontSize="sm" color="gray.200">
-          Arraste uma imagem aqui ou clique no botão
+          {textLabel ?? ' Arraste uma imagem aqui ou clique no botão' }
         </Text>
 
         <Input
@@ -74,7 +76,7 @@ export function ImageUploader({
           size="sm"
           rounded="lg"
         >
-          Upload de Imagem
+          {buttonLabel ?? 'Enviar imagem'}
         </Button>
       </Flex>
     </Box>

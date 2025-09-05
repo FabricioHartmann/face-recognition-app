@@ -1,1 +1,1 @@
-export * from './ImageRegister.component'
+export * from './ImageRegister.page'

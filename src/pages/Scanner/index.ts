@@ -1,1 +1,1 @@
-export * from './Scanner.component'
+export * from './Scanner.page'
