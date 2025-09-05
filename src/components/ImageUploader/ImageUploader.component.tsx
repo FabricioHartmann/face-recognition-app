@@ -11,9 +11,7 @@ export function ImageUploader({
   const [isDragging, setIsDragging] = useState(false);
 
   function handleFile(file: File) {
-    const img = document.createElement("img") as HTMLImageElement;
-    img.onload = () => onImageChange(img);
-    img.src = URL.createObjectURL(file);
+    onImageChange(file);
 
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -22,14 +20,13 @@ export function ImageUploader({
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (!file) return;
-    handleFile(file);
+    if (file) handleFile(file);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (e.dataTransfer.files?.length > 0) {
       handleFile(e.dataTransfer.files[0]);
       e.dataTransfer.clearData();
     }

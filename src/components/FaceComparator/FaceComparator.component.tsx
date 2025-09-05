@@ -1,5 +1,5 @@
 import { Box, Image, Text, Spinner } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useImageStore } from "../../store/imageStore/imageStore.store";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
@@ -12,11 +12,15 @@ export function FaceComparator({ imageSrc }: FaceComparatorProps) {
   const { registeredDescriptor } = useImageStore();
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const { loading, hasFace, descriptor } = useFaceDetection(imgRef.current);
+  const { loading, hasFace } = useFaceDetection(imgRef.current);
   const { match, distance } = useFaceComparing(
     registeredDescriptor,
     imgRef.current
   );
+
+  useEffect(() => {
+    console.log({ imgRef, imageSrc });
+  }, []);
 
   return (
     <Box>

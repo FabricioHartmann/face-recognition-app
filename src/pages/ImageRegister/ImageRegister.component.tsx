@@ -6,7 +6,6 @@ import {
   Button,
   Flex,
   Spinner,
-  Center,
   Tabs,
   Tab,
   Icon,
@@ -17,14 +16,15 @@ import {
 import * as faceapi from "face-api.js";
 import { ImageUploader } from "../../components/ImageUploader/ImageUploader.component";
 import { useImageStore } from "../../store/imageStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../../components/ui/toast";
-import { detectionToastVariants } from "../../utils/faceApiDetectionToastsVariants";
+import { detectionToastVariants } from "../../utils/faceApiUtils/faceApiDetectionToastsVariants";
 import { MainLayout } from "../../components/MainLayout";
 import { RenderIf } from "../../components/RenderIf";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../../components/Camera/Camera.component";
+import { fileToBase64 } from "../../utils/imageManipulationUtils/fileToBase64";
 // import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
 
 export function ImageRegister() {
@@ -33,15 +33,15 @@ export function ImageRegister() {
   // const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const {
-    registeredImageSrc,
+    registeredFile,
     setRegisteredDescriptor,
-    setRegisteredImageSrc,
-    deleteRegisteredImageSrc,
+    setRegisteredFile,
+    deleteRegisteredFile,
     clearRegisteredDescriptor,
   } = useImageStore();
 
   const deleteImageAndDescriptor = () => {
-    deleteRegisteredImageSrc();
+    deleteRegisteredFile();
     clearRegisteredDescriptor();
   };
 
@@ -49,8 +49,18 @@ export function ImageRegister() {
     navigate("/scanner");
   };
 
-  const handleImageChange = async (img: HTMLImageElement) => {
+  const handleImageChange = async (file: File) => {
     try {
+      const base64Img = await fileToBase64(file);
+      const img = document.createElement("img");
+      img.src = base64Img;
+      img.crossOrigin = "anonymous";
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Erro ao carregar imagem"));
+      });
+
       setLoading(true);
       const detection = await faceapi
         .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
@@ -73,8 +83,9 @@ export function ImageRegister() {
       // }
       const descriptorArray = Array.from(detection.descriptor);
       await setRegisteredDescriptor(descriptorArray);
+
       toast(detectionToastVariants.detected);
-      setRegisteredImageSrc(img.src);
+      setRegisteredFile(img.src);
       // navigate("/scanner");
     } catch (err) {
       console.error(err);
@@ -83,6 +94,10 @@ export function ImageRegister() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log({ registeredFile });
+  }, []);
 
   return (
     <MainLayout>
@@ -134,13 +149,13 @@ export function ImageRegister() {
               </Text>
             </Flex>
           </RenderIf>
-          <RenderIf condition={!registeredImageSrc?.length && !loading}>
+          <RenderIf condition={!registeredFile?.length && !loading}>
             <Text>Registre uma imagem para iniciar o teste</Text>
           </RenderIf>
-          <RenderIf condition={!!registeredImageSrc?.length}>
+          <RenderIf condition={!!registeredFile?.length}>
             <Box width="100%">
               <Flex justify="center" bg={"black"} mb={4}>
-                <Image w="240px" maxH="328px" src={registeredImageSrc} />
+                <Image w="240px" maxH="328px" src={registeredFile} />
               </Flex>
               <Flex gap={4}>
                 <Button

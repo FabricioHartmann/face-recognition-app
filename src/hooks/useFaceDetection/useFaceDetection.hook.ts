@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
-import { faceApiOptions } from "../../utils/faceApiDefaultOptions";
+import { faceApiOptions } from "../../utils/faceApiUtils/faceApiDefaultOptions";
 import { useFaceApiModels } from "../useFaceApiModels";
 
 export function useFaceDetection(imgElement: HTMLImageElement | null) {
