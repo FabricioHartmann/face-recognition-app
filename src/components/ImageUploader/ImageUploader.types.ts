@@ -1,5 +1,7 @@
 export type ImageUploaderProps = {
   onImageChange: (file: File) => void;
-  fullWidth?: boolean,
-  fullHeight?: boolean,
-}
+  textLabel?: string;
+  buttonLabel?: string;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};

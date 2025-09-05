@@ -5,10 +5,8 @@ export type ImageStateProps = {
   scannedDescriptor: number[];
   setRegisteredFile: (file: string) => void;
   setScannedFile: (file: string) => void;
-  deleteScannedFile: () => void;
-  deleteRegisteredFile: () => void;
   setRegisteredDescriptor: (descriptor: number[]) => void;
   setScannedDescriptor: (descriptor: number[]) => void;
-  clearRegisteredDescriptor: () => void;
-  clearScannedDescriptor: () => void;
+  clearScannedFileAndDescriptor: () => void;
+  clearAll: () => void;
 };

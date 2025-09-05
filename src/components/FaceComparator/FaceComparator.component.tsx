@@ -1,5 +1,5 @@
-import { Box, Image, Text, Spinner } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
+import { Box, Image, Text, Spinner, Flex } from "@chakra-ui/react";
+import { useRef } from "react";
 import { useImageStore } from "../../store/imageStore/imageStore.store";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
@@ -18,21 +18,19 @@ export function FaceComparator({ imageSrc }: FaceComparatorProps) {
     imgRef.current
   );
 
-  useEffect(() => {
-    console.log({ imgRef, imageSrc });
-  }, []);
-
   return (
     <Box>
-      <Image
-        ref={imgRef}
-        src={imageSrc}
-        alt="Imagem comparada"
-        w="240px"
-        maxH="328px"
-        crossOrigin="anonymous"
-        display="block"
-      />
+      <Flex justify="center" bg={"black"} mb={4}>
+        <Image
+          ref={imgRef}
+          src={imageSrc}
+          alt="Imagem comparada"
+          w="240px"
+          maxH="328px"
+          crossOrigin="anonymous"
+          display="block"
+        />
+      </Flex>
 
       {loading && (
         <Text mt={2}>

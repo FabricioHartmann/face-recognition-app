@@ -7,17 +7,23 @@ export const useImageStore = create(
     (set) => ({
       registeredFile: "",
       registeredDescriptor: [],
-      scannedDescriptor: [],
       scannedFile: "",
+      scannedDescriptor: [],
       setScannedFile: (src) => set({ scannedFile: src }),
       setRegisteredFile: (src) => set({ registeredFile: src }),
-      deleteRegisteredFile: () => set({ registeredFile: "" }),
-      deleteScannedFile: () => set({ scannedFile: "" }),
-      setRegisteredDescriptor: (descriptor) => set({ registeredDescriptor: descriptor }),
-      clearRegisteredDescriptor: () => set({ registeredDescriptor: [] }),
+      setRegisteredDescriptor: (descriptor) =>
+        set({ registeredDescriptor: descriptor }),
       setScannedDescriptor: (descriptor) =>
         set({ scannedDescriptor: descriptor }),
-      clearScannedDescriptor: () => set({ scannedDescriptor: [] }),
+      clearScannedFileAndDescriptor: () =>
+        set({ scannedFile: "", scannedDescriptor: [] }),
+      clearAll: () =>
+        set({
+          registeredFile: "",
+          registeredDescriptor: [],
+          scannedFile: "",
+          scannedDescriptor: [],
+        }),
     }),
 
     {

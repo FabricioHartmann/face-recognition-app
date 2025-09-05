@@ -7,8 +7,8 @@ export function Home() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const goToRegisterPage = () => {
-    navigate("/register");
+  const goToComparingPage = () => {
+    navigate("/comparar-rostos");
   };
 
   return (
@@ -21,14 +21,14 @@ export function Home() {
           Aplicativo simples para testar reconhecimento facial com face-api
         </Text>
         <RenderIf condition={!isMobile}>
-          <Button onClick={goToRegisterPage} w="164px" rounded="l1" mt={8}>
+          <Button onClick={goToComparingPage} w="164px" rounded="l1" mt={8}>
             Iniciar
           </Button>
         </RenderIf>
       </Flex>
       <RenderIf condition={isMobile}>
         <Flex w="100%" justifyContent={'center'}>
-          <Button onClick={goToRegisterPage} w={{ base: "100%", md: "164px" }} rounded="l1">
+          <Button onClick={goToComparingPage} w={{ base: "100%", md: "164px" }} rounded="l1">
             Iniciar
           </Button>
         </Flex>

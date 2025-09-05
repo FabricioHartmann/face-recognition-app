@@ -6,7 +6,9 @@ import { ImageUploader } from "../ImageUploader/ImageUploader.component";
 import type { SourceSelectorProps } from "./SourceSelector.types";
 
 export function SourceSelector({
-  onImageChange
+  onImageChange,
+  uploaderButtonLabel,
+  uploaderTextLabel,
 }: SourceSelectorProps) {
 
   return (
@@ -26,6 +28,8 @@ export function SourceSelector({
             fullHeight
             fullWidth
             onImageChange={onImageChange}
+            buttonLabel={uploaderButtonLabel}
+            textLabel={uploaderTextLabel}
           />
         </TabPanel>
         <TabPanel padding={0}>
