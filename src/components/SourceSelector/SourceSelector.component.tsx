@@ -1,4 +1,13 @@
-import { Flex, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Icon,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../Camera/Camera.component";
 import { ImageUploader } from "../ImageUploader/ImageUploader.component";
@@ -9,7 +18,6 @@ export function SourceSelector({
   uploaderButtonLabel,
   uploaderTextLabel,
 }: SourceSelectorProps) {
-
   return (
     <Tabs variant="enclosed" colorScheme="" isFitted>
       <TabList mb="4">
@@ -24,15 +32,13 @@ export function SourceSelector({
       <TabPanels>
         <TabPanel padding={0}>
           <ImageUploader
-            fullHeight
-            fullWidth
             onImageChange={onImageChange}
             buttonLabel={uploaderButtonLabel}
             textLabel={uploaderTextLabel}
           />
         </TabPanel>
         <TabPanel padding={0}>
-          <Flex minH="280px">
+          <Flex minH={{ base: "120px", md: "280px" }}>
             <Camera />
           </Flex>
         </TabPanel>

@@ -4,8 +4,6 @@ import type { ImageUploaderProps } from "./ImageUploader.types";
 
 export function ImageUploader({
   onImageChange,
-  fullWidth,
-  fullHeight,
   textLabel,
   buttonLabel,
 }: ImageUploaderProps) {
@@ -36,8 +34,8 @@ export function ImageUploader({
 
   return (
     <Box
-      width={fullWidth ? "100%" : "auto"}
-      height={fullHeight ? "100%" : "220px"}
+      width={"100%"}
+      height={"100%"}
       borderColor={isDragging ? "blue.300" : "gray.300"}
       transition="0.2s"
       onDragOver={(e) => {
@@ -55,11 +53,11 @@ export function ImageUploader({
         borderRadius="xl"
         p={10}
         gap={4}
-        minH="280px"
+        minH={{ base: "180px", md: "280px" }}
         textAlign="center"
       >
         <Text fontSize="sm" color="gray.200">
-          {textLabel ?? ' Arraste uma imagem aqui ou clique no botão' }
+          {textLabel ?? " Arraste uma imagem aqui ou clique no botão"}
         </Text>
 
         <Input
@@ -76,7 +74,7 @@ export function ImageUploader({
           size="sm"
           rounded="lg"
         >
-          {buttonLabel ?? 'Enviar imagem'}
+          {buttonLabel ?? "Enviar imagem"}
         </Button>
       </Flex>
     </Box>

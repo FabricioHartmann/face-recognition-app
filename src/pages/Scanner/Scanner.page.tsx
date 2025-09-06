@@ -7,42 +7,64 @@ import {
   Image,
   Heading,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import { useImageStore } from "../../store/imageStore";
 import { toast } from "../../components/ui/toast";
-import { detectionToastVariants } from "../../utils/faceApiUtils/faceApiDetectionToastsVariants";
+import { detectionToastVariants } from "../../utils/faceApiManipulators/faceApiDetectionToastsVariants";
 import { RenderIf } from "../../components/RenderIf";
 import { MainLayout } from "../../components/MainLayout";
-import { fileToBase64 } from "../../utils/imageManipulationUtils/fileToBase64";
+import { fileToBase64 } from "../../utils/imageManipulators/fileToBase64";
 import { SourceSelector } from "../../components/SourceSelector";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
+import { getImage, saveImage } from "../../utils/dbManipulators/db";
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
 export function Scanner() {
   const {
-    scannedFile,
-    registeredFile,
+    registeredFileId,
     registeredDescriptor,
-    setRegisteredFile,
-    setScannedDescriptor,
+    scannedFileId,
+    scannedDescriptor,
+    setRegisteredFileId,
     setRegisteredDescriptor,
-    setScannedFile,
-    clearAll,
+    setScannedFileId,
+    setScannedDescriptor,
     clearScannedFileAndDescriptor,
+    clearAll,
   } = useImageStore();
+  const isMobile = useIsMobile();
+  const [registeredSrc, setRegisteredSrc] = useState<string | null>(null);
+  const [scannedSrc, setScannedSrc] = useState<string | null>(null);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [scanLoading, setScanLoading] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const { loading, hasFace } = useFaceDetection(imgRef.current);
+  const { loading: detectionLoading, hasFace } = useFaceDetection(
+    imgRef.current
+  );
   const { match, distance } = useFaceComparing(
     registeredDescriptor,
     imgRef.current
   );
 
-  const deleteRegisteredImage = () => {
-    clearAll();
-  };
+  useEffect(() => {
+    if (registeredFileId) {
+      getImage(registeredFileId as number).then((blob) => {
+        if (blob) setRegisteredSrc(URL.createObjectURL(blob));
+      });
+    }
+    console.log({ registeredFileId });
+  }, [registeredFileId]);
+
+  useEffect(() => {
+    if (scannedFileId) {
+      getImage(scannedFileId as number).then((blob) => {
+        if (blob) setScannedSrc(URL.createObjectURL(blob));
+      });
+    }
+    console.log({ scannedFileId });
+  }, [scannedFileId]);
 
   const deleteComparisonImage = () => {
     clearScannedFileAndDescriptor();
@@ -83,8 +105,10 @@ export function Scanner() {
       const descriptorArray = Array.from(detection.descriptor);
       await setRegisteredDescriptor(descriptorArray);
 
+      const id = await saveImage(file);
+      setRegisteredFileId(id);
       toast(detectionToastVariants.detected);
-      setRegisteredFile(img.src);
+
       // navigate("/scanner");
     } catch (err) {
       console.error(err);
@@ -117,7 +141,8 @@ export function Scanner() {
       }
 
       const descriptorArray = Array.from(detection.descriptor);
-      setScannedFile(img.src);
+      const id = await saveImage(file);
+      setScannedFileId(id);
       setScannedDescriptor(descriptorArray);
     } catch (err) {
       console.error(err);
@@ -130,28 +155,58 @@ export function Scanner() {
   return (
     <MainLayout>
       <Flex
-        height={"440px"}
+        height={{ base: "auto", md: "400px" }}
         direction={{ base: "column", md: "row" }}
         maxW="1000px"
-        gap={6}
+        gap={{ base: "4", md: "8" }}
       >
         <Box flex="1">
-          <Heading size="md" mb={6} textAlign="center">
-            {!!registeredFile ? "Imagem registrada" : "Regitre uma imagem"}
-          </Heading>
-          <RenderIf condition={!registeredFile}>
+          <Flex
+            justify={"space-between"}
+            alignItems={"center"}
+            align={"center"}
+            textAlign={"center"}
+          >
+            <Heading
+              size={{ base: "sm", md: "md" }}
+              mb={{ base: "4", md: "6" }}
+              textAlign={{ base: "start", md: "center" }}
+            >
+              {!!registeredFileId ? "Imagem registrada" : "Regitre uma imagem"}
+            </Heading>
+          </Flex>
+
+          <RenderIf condition={!registeredFileId}>
             <SourceSelector
               onImageChange={handleRegisterImage}
               uploaderButtonLabel="Registrar imagem"
             />
           </RenderIf>
-          <RenderIf condition={!!registeredFile}>
-            <Box width="100%">
-              <Flex justify="center" bg={"black"} mb={4} h={"340px"}>
-                <Image maxH="340px" src={registeredFile} />
-              </Flex>
-              <Button onClick={deleteRegisteredImage} colorScheme="red">
-                Excluir
+          <RenderIf condition={!!registeredFileId}>
+            <Box
+              position="relative"
+              bg="black"
+              h={{ base: "220px", md: "339px" }}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Image
+                src={registeredSrc || ""}
+                maxH={{ base: "220px", md: "339px" }}
+                objectFit="contain"
+                crossOrigin="anonymous"
+              />
+
+              <Button
+                position="absolute"
+                bottom={2}
+                right={2}
+                size="sm"
+                onClick={clearAll}
+                colorScheme="red"
+              >
+                Excluir imagem
               </Button>
             </Box>
           </RenderIf>
@@ -163,62 +218,93 @@ export function Scanner() {
         </Box>
 
         <Box flex="1">
-          <Heading size="md" mb={6} textAlign="center">
+          <Heading
+            size={{ base: "sm", md: "md" }}
+            mb={{ base: "4", md: "6" }}
+            textAlign={{ base: "start", md: "center" }}
+          >
             Nova imagem
           </Heading>
-          <RenderIf condition={!registeredFile}>
+          <RenderIf condition={!registeredFileId}>
             <>
-              <Flex align="center" justify="center" h="396px">
+              <Flex
+                align="center"
+                justify="center"
+                h={{ base: "148px", md: "396px" }}
+              >
                 <Text textAlign="center">Registre uma imagem para iniciar</Text>
               </Flex>
             </>
           </RenderIf>
-          <RenderIf condition={!!registeredFile && !scannedFile}>
+          <RenderIf condition={!!registeredFileId && !scannedFileId}>
             <SourceSelector
               onImageChange={handleNewImageToCompare}
               uploaderButtonLabel="Enviar imagem"
             />
           </RenderIf>
-          <RenderIf condition={!!registeredFile && !!scannedFile}>
-            {/* <FaceComparator imageSrc={scannedFile} /> */}
-            <Box width="100%">
+          <RenderIf condition={!!registeredFileId && !!scannedFileId}>
+            <Box width="100%" position="relative">
               <Flex
                 justify="center"
-                bg={"black"}
-                mb={4}
-                align={"center"}
-                h="340px"
+                align="center"
+                bg="black"
+                h={{ base: "200px", md: "340px" }}
               >
                 {scanLoading ? (
                   <Spinner size="xs" mr={2} />
                 ) : (
                   <Image
                     ref={imgRef}
-                    src={scannedFile}
-                    alt="Imagem comparada"
-                    maxH="340px"
+                    src={scannedSrc || ""}
+                    maxH={{ base: "200px", md: "340px" }}
                     crossOrigin="anonymous"
-                    display="block"
+                    objectFit="contain"
                   />
                 )}
               </Flex>
-              <Button onClick={deleteComparisonImage} colorScheme="red">
-                Excluir
+
+              <Button
+                size="sm"
+                colorScheme="red"
+                position="absolute"
+                bottom={2}
+                right={2}
+                onClick={deleteComparisonImage}
+              >
+                Excluir imagem
               </Button>
             </Box>
           </RenderIf>
         </Box>
       </Flex>
-      <Box width="100%">
-        <RenderIf condition={!loading && match !== null}>
-          <Flex width={"100%"} justify={"center"} mb={4}>
+      <RenderIf
+        condition={
+          !detectionLoading &&
+          match !== null &&
+          !!registeredFileId &&
+          !!scannedFileId
+        }
+      >
+        <Box width="100%">
+          <Flex direction={"column"} justify={"center"} gap={4}>
             <Text color={match ? "green.500" : "red.500"}>
               {match ? "Rostos correspondem!" : "Rostos diferentes"} (Distância:{" "}
               {distance?.toFixed(4)})
             </Text>
+            <Button
+              size={"sm"}
+              width={{ base: "100%", md: "240px" }}
+              onClick={clearAll}
+            >
+              Registrar nova imagem
+            </Button>
           </Flex>
-        </RenderIf>
-      </Box>
+
+          <RenderIf condition={detectionLoading}>
+            <Spinner size="xs" mr={2} /> Comparando imagens...
+          </RenderIf>
+        </Box>
+      </RenderIf>
     </MainLayout>
   );
 }
