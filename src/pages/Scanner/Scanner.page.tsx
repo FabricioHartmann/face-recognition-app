@@ -8,41 +8,37 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import * as faceapi from "face-api.js";
 import { useImageStore } from "../../store/imageStore";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiManipulators/faceApiDetectionToastsVariants";
 import { RenderIf } from "../../components/RenderIf";
 import { MainLayout } from "../../components/MainLayout";
-import { fileToBase64 } from "../../utils/imageManipulators/fileToBase64";
 import { SourceSelector } from "../../components/SourceSelector";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
 import { getImage, saveImage } from "../../utils/dbManipulators/db";
+import { loadImageElement } from "../../utils/imageManipulators/loadImageElement";
+import { detectFaceDescriptor } from "../../utils/faceApiManipulators/detectFaceDescriptor";
+import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
 
 export function Scanner() {
   const {
     registeredFileId,
     registeredDescriptor,
-    scannedFileId,
     setRegisteredFileId,
     setRegisteredDescriptor,
-    setScannedFileId,
-    setScannedDescriptor,
-    clearScannedFileAndDescriptor,
     clearAll,
   } = useImageStore();
   const [registeredSrc, setRegisteredSrc] = useState<string | null>(null);
   const [scannedSrc, setScannedSrc] = useState<string | null>(null);
+  const [scannedDescriptor, setScannedDescriptor] = useState<number[]>([]);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [scanLoading, setScanLoading] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const { loading: detectionLoading, hasFace } = useFaceDetection(
-    imgRef.current
-  );
+  const { loading: detectionLoading } = useFaceDetection(imgRef.current);
   const { match, distance } = useFaceComparing(
     registeredDescriptor,
-    imgRef.current
+    scannedDescriptor
   );
 
   useEffect(() => {
@@ -53,99 +49,57 @@ export function Scanner() {
     }
   }, [registeredFileId]);
 
-  useEffect(() => {
-    if (scannedFileId) {
-      getImage(scannedFileId as number).then((blob) => {
-        if (blob) setScannedSrc(URL.createObjectURL(blob));
-      });
-    }
-  }, [scannedFileId]);
+  const deleteComparisonImage = async () => {
+    setScannedDescriptor([]);
+    setScannedSrc(null);
+  };
 
-  const deleteComparisonImage = () => {
-    clearScannedFileAndDescriptor();
+  const deleteAllImages = async () => {
+    clearAll();
+    deleteComparisonImage();
   };
 
   const handleRegisterImage = async (file: File) => {
     try {
-      const base64Img = await fileToBase64(file);
-      const img = document.createElement("img");
-      img.src = base64Img;
-      img.crossOrigin = "anonymous";
-
-      await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error("Erro ao carregar imagem"));
-      });
-
       setRegisterLoading(true);
-      const detection = await faceapi
-        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      const img = await loadImageElement(file);
 
-      if (!detection) {
+      const descriptor = await detectFaceDescriptor(img, faceApiOptions);
+      if (!descriptor) {
         toast(detectionToastVariants.undetected);
         clearAll();
         return;
       }
-      // console.log({ canvasRef: canvasRef.current });
 
-      // if (canvasRef.current) {
-      //   const dims = faceapi.matchDimensions(canvasRef.current, img, true);
-      //   const detections = await faceapi.detectAllFaces(img, faceApiOptions);
-
-      //   const resized = faceapi.resizeResults(detections, dims);
-      //   faceapi.draw.drawDetections(canvasRef.current, resized);
-      // }
-      const descriptorArray = Array.from(detection.descriptor);
-      await setRegisteredDescriptor(descriptorArray);
-
+      const descriptorArray = Array.from(descriptor);
+      setRegisteredDescriptor(descriptorArray);
       const id = await saveImage(file);
-      setRegisteredFileId(id);
-      toast(detectionToastVariants.detected);
-
-      // navigate("/scanner");
+      setRegisteredFileId(id as number);
     } catch (err) {
-      console.error(err);
       toast(detectionToastVariants.error);
     } finally {
       setRegisterLoading(false);
     }
   };
-  async function handleNewImageToCompare(file: File) {
+
+  const handleNewImageToCompare = async (file: File) => {
     try {
       setScanLoading(true);
-      const base64Img = await fileToBase64(file);
-      const img = document.createElement("img");
-      img.src = base64Img;
-      img.crossOrigin = "anonymous";
-
-      await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error("Erro ao carregar imagem"));
-      });
-
-      const detection = await faceapi
-        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      if (!detection) {
+      const img = await loadImageElement(file);
+      const descriptor = await detectFaceDescriptor(img, faceApiOptions);
+      if (!descriptor) {
         toast(detectionToastVariants.undetected);
         return;
       }
-
-      const descriptorArray = Array.from(detection.descriptor);
-      const id = await saveImage(file);
-      setScannedFileId(id);
-      setScannedDescriptor(descriptorArray);
+      const descriptorArray = Array.from(descriptor);
+      await setScannedDescriptor(descriptorArray);
+      setScannedSrc(img.src);
     } catch (err) {
-      console.error(err);
       toast(detectionToastVariants.error);
     } finally {
       setScanLoading(false);
     }
-  }
+  };
 
   return (
     <MainLayout>
@@ -200,7 +154,7 @@ export function Scanner() {
                 bottom={2}
                 right={2}
                 size="sm"
-                onClick={clearAll}
+                onClick={deleteAllImages}
                 colorScheme="red"
               >
                 Excluir imagem
@@ -233,7 +187,9 @@ export function Scanner() {
               </Flex>
             </>
           </RenderIf>
-          <RenderIf condition={!!registeredFileId && !scannedFileId}>
+          <RenderIf
+            condition={!!registeredFileId && !scannedDescriptor?.length}
+          >
             <SourceSelector
               onImageChange={handleNewImageToCompare}
               onImageCapture={handleNewImageToCompare}
@@ -241,7 +197,9 @@ export function Scanner() {
               fileOrigin="comparison"
             />
           </RenderIf>
-          <RenderIf condition={!!registeredFileId && !!scannedFileId}>
+          <RenderIf
+            condition={!!registeredFileId && !!scannedDescriptor?.length}
+          >
             <Box width="100%" position="relative">
               <Flex
                 justify="center"
@@ -276,12 +234,15 @@ export function Scanner() {
           </RenderIf>
         </Box>
       </Flex>
+      <RenderIf condition={detectionLoading}>
+        <Spinner size="xs" mr={2} /> Comparando imagens...
+      </RenderIf>
       <RenderIf
         condition={
           !detectionLoading &&
           match !== null &&
           !!registeredFileId &&
-          !!scannedFileId
+          !!scannedDescriptor?.length
         }
       >
         <Box width="100%">
@@ -298,10 +259,6 @@ export function Scanner() {
               Registrar nova imagem
             </Button>
           </Flex>
-
-          <RenderIf condition={detectionLoading}>
-            <Spinner size="xs" mr={2} /> Comparando imagens...
-          </RenderIf>
         </Box>
       </RenderIf>
     </MainLayout>

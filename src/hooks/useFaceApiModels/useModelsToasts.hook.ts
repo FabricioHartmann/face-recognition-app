@@ -8,7 +8,6 @@ export function useModelsToasts() {
   const modelsReady = useFaceApiModels();
 
   useEffect(() => {
-    console.log(modelsReady);
     if (modelsReady === "loading") {
       toast(modelsToastVariants.loading);
       return;
