@@ -19,14 +19,12 @@ import { SourceSelector } from "../../components/SourceSelector";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
 import { getImage, saveImage } from "../../utils/dbManipulators/db";
-import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
 export function Scanner() {
   const {
     registeredFileId,
     registeredDescriptor,
     scannedFileId,
-    scannedDescriptor,
     setRegisteredFileId,
     setRegisteredDescriptor,
     setScannedFileId,
@@ -34,7 +32,6 @@ export function Scanner() {
     clearScannedFileAndDescriptor,
     clearAll,
   } = useImageStore();
-  const isMobile = useIsMobile();
   const [registeredSrc, setRegisteredSrc] = useState<string | null>(null);
   const [scannedSrc, setScannedSrc] = useState<string | null>(null);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -54,7 +51,6 @@ export function Scanner() {
         if (blob) setRegisteredSrc(URL.createObjectURL(blob));
       });
     }
-    console.log({ registeredFileId });
   }, [registeredFileId]);
 
   useEffect(() => {
@@ -63,7 +59,6 @@ export function Scanner() {
         if (blob) setScannedSrc(URL.createObjectURL(blob));
       });
     }
-    console.log({ scannedFileId });
   }, [scannedFileId]);
 
   const deleteComparisonImage = () => {
@@ -172,14 +167,16 @@ export function Scanner() {
               mb={{ base: "4", md: "6" }}
               textAlign={{ base: "start", md: "center" }}
             >
-              {!!registeredFileId ? "Imagem registrada" : "Regitre uma imagem"}
+              {!!registeredFileId ? "Imagem registrada" : "Registre uma imagem"}
             </Heading>
           </Flex>
 
           <RenderIf condition={!registeredFileId}>
             <SourceSelector
               onImageChange={handleRegisterImage}
+              onImageCapture={handleRegisterImage}
               uploaderButtonLabel="Registrar imagem"
+              fileOrigin="register"
             />
           </RenderIf>
           <RenderIf condition={!!registeredFileId}>
@@ -193,7 +190,7 @@ export function Scanner() {
             >
               <Image
                 src={registeredSrc || ""}
-                maxH={{ base: "220px", md: "339px" }}
+                h={{ base: "220px", md: "339px" }}
                 objectFit="contain"
                 crossOrigin="anonymous"
               />
@@ -239,7 +236,9 @@ export function Scanner() {
           <RenderIf condition={!!registeredFileId && !scannedFileId}>
             <SourceSelector
               onImageChange={handleNewImageToCompare}
+              onImageCapture={handleNewImageToCompare}
               uploaderButtonLabel="Enviar imagem"
+              fileOrigin="comparison"
             />
           </RenderIf>
           <RenderIf condition={!!registeredFileId && !!scannedFileId}>
@@ -256,7 +255,7 @@ export function Scanner() {
                   <Image
                     ref={imgRef}
                     src={scannedSrc || ""}
-                    maxH={{ base: "200px", md: "340px" }}
+                    h={{ base: "200px", md: "340px" }}
                     crossOrigin="anonymous"
                     objectFit="contain"
                   />

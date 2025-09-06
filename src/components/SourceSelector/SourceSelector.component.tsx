@@ -6,7 +6,6 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
 } from "@chakra-ui/react";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../Camera/Camera.component";
@@ -15,8 +14,10 @@ import type { SourceSelectorProps } from "./SourceSelector.types";
 
 export function SourceSelector({
   onImageChange,
+  onImageCapture,
   uploaderButtonLabel,
   uploaderTextLabel,
+  fileOrigin,
 }: SourceSelectorProps) {
   return (
     <Tabs variant="enclosed" colorScheme="" isFitted>
@@ -39,7 +40,7 @@ export function SourceSelector({
         </TabPanel>
         <TabPanel padding={0}>
           <Flex minH={{ base: "120px", md: "280px" }}>
-            <Camera />
+            <Camera onCapture={onImageCapture} fileOrigin={fileOrigin} />
           </Flex>
         </TabPanel>
       </TabPanels>

@@ -1,9 +1,12 @@
-import { Box, Button, Flex, Text, useStatStyles } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { RenderIf } from "../RenderIf";
+import { FiCamera } from "react-icons/fi";
+import type { CameraProps } from "./Camera.types";
+import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
 
-export function Camera() {
+export function Camera({ onCapture, fileOrigin }: CameraProps) {
   const webcamRef = useRef<Webcam>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [cameraError, setCameraError] = useState(false);
@@ -11,43 +14,44 @@ export function Camera() {
 
   const loadCamera = useCallback(() => {
     setIsLoading(false);
-    console.log("carregou");
   }, []);
 
   const handleCameraError = useCallback(() => {
-    setIsLoading(false)
+    setIsLoading(false);
     setCameraError(true);
   }, []);
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
-    console.log(imageSrc, "img base64");
-  }, [webcamRef]);
+    if (!imageSrc) return;
+
+    const file = base64ToFile(imageSrc, `capture-${fileOrigin}`);
+    onCapture(file);
+  }, [onCapture]);
 
   return (
-    <Flex
-      direction="column"
-      gap={4}
-      justify="center"
-      width="100%"
-      className="flex flex-col items-center gap-4"
-    >
-      <RenderIf condition={isLoading && cameraError}>
+    <Flex direction="column" gap={4} justify="center" width="100%">
+      <RenderIf condition={isLoading}>
         <Box>
           <Text>Carregando câmera...</Text>
         </Box>
       </RenderIf>
-      <Flex direction="column">
-        <Flex justify="center" align="center" bg="black" maxH='240px'>
+      <RenderIf condition={cameraError}>
+        <Box>
+          <Text>Erro ao acessar a câmera.</Text>
+        </Box>
+      </RenderIf>
+      <Flex direction="column" gap={2}>
+        <Flex justify="center" align="center" bg="black" maxH="240px">
           <Webcam
             audio={false}
-            height="280px"
-            width="280px"
+            height="240px"
+            width="240px"
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={{
               facingMode: "user",
-              //   facingMode: 'enviroment', //camera traseira
+              //   facingMode: 'enviroment' (camera traseira)
             }}
             mirrored={isMirrored}
             onUserMedia={loadCamera}
@@ -58,11 +62,17 @@ export function Camera() {
           <Button
             disabled
             onClick={() => setIsMirrored(!isMirrored)}
-            rounded="l1"
+            size={"sm"}
           >
             Config
           </Button>
-          <Button disabled width="100%" onClick={capture} rounded="l1">
+          <Button
+            size={"sm"}
+            width="100%"
+            colorScheme="green"
+            onClick={capture}
+            leftIcon={<FiCamera />}
+          >
             Capturar
           </Button>
         </Flex>
