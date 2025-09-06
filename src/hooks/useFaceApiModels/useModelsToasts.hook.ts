@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
 import { useFaceApiModels } from "./useFaceApiModels.hook";
-import { modelsToastVariants } from "../../utils/faceApiUtils/faceApiModelsToastsVariants";
+import { modelsToastVariants } from "../../utils/faceApiManipulators/faceApiModelsToastsVariants";
 
 export function useModelsToasts() {
   const toast = useToast();

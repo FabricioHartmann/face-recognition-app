@@ -1,10 +1,10 @@
 export type ImageStateProps = {
-  registeredFile: string;
-  scannedFile: string;
+  registeredFileId: IDBValidKey | null;
+  scannedFileId: IDBValidKey | null;
   registeredDescriptor: number[];
   scannedDescriptor: number[];
-  setRegisteredFile: (file: string) => void;
-  setScannedFile: (file: string) => void;
+  setRegisteredFileId: (id: IDBValidKey | null) => void;
+  setScannedFileId: (id: IDBValidKey | null) => void;
   setRegisteredDescriptor: (descriptor: number[]) => void;
   setScannedDescriptor: (descriptor: number[]) => void;
   clearScannedFileAndDescriptor: () => void;
