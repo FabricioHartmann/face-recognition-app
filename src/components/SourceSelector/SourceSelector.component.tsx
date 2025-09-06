@@ -1,5 +1,4 @@
-import React, { useRef, useState } from "react";
-import { Box, Button, Flex, Icon, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { Flex, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../Camera/Camera.component";
 import { ImageUploader } from "../ImageUploader/ImageUploader.component";
