@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../Camera/Camera.component";
-import { ImageUploader } from "../ImageUploader/ImageUploader.component";
+import { ImageUploader } from "../ImageUploader";
 import type { SourceSelectorProps } from "./SourceSelector.types";
 
 export function SourceSelector({

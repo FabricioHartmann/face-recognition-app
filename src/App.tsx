@@ -1,9 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { appRoutes } from "./routes";
-import { useModelsToasts } from "./hooks/useFaceApiModels/useModelsToasts.hook";
+import { useFaceApiModels } from "./hooks/useFaceApiModels";
+import { FaceApiLoader } from "./components/ModelsLoader/ModelsLoader.component";
 
 function App() {
-  useModelsToasts();
+  const status = useFaceApiModels();
+
+  if (status !== "success") return <FaceApiLoader status={status} />;
   return (
     <BrowserRouter>
       <Routes>
