@@ -18,8 +18,9 @@ import { useFaceComparing } from "../../hooks/useFaceComparing";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
 import { getImage, saveImage } from "../../utils/dbManipulators/db";
 import { loadImageElement } from "../../utils/imageManipulators/loadImageElement";
-import { detectFaceDescriptor } from "../../utils/faceApiManipulators/detectFaceDescriptor";
+import { detectFace } from "../../utils/faceApiManipulators/detectFace";
 import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
+import * as faceapi from "face-api.js";
 
 export function Scanner() {
   const {
@@ -34,8 +35,13 @@ export function Scanner() {
   const [scannedDescriptor, setScannedDescriptor] = useState<number[]>([]);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [scanLoading, setScanLoading] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const { loading: detectionLoading } = useFaceDetection(imgRef.current);
+  const registeredImgRef = useRef<HTMLImageElement>(null);
+  const registeredCanvasRef = useRef<HTMLCanvasElement>(null);
+  const scannedImgRef = useRef<HTMLImageElement>(null);
+  const scannedCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { loading: detectionLoading, status } = useFaceDetection(
+    scannedImgRef.current
+  );
   const { match, distance } = useFaceComparing(
     registeredDescriptor,
     scannedDescriptor
@@ -64,14 +70,14 @@ export function Scanner() {
       setRegisterLoading(true);
       const img = await loadImageElement(file);
 
-      const descriptor = await detectFaceDescriptor(img, faceApiOptions);
-      if (!descriptor) {
+      const detection = await detectFace(img, faceApiOptions);
+      if (!detection?.descriptor) {
         toast(detectionToastVariants.undetected);
         clearAll();
         return;
       }
 
-      const descriptorArray = Array.from(descriptor);
+      const descriptorArray = Array.from(detection?.descriptor);
       setRegisteredDescriptor(descriptorArray);
       const id = await saveImage(file);
       setRegisteredFileId(id as number);
@@ -85,13 +91,15 @@ export function Scanner() {
   const handleNewImageToCompare = async (file: File) => {
     try {
       setScanLoading(true);
+
       const img = await loadImageElement(file);
-      const descriptor = await detectFaceDescriptor(img, faceApiOptions);
-      if (!descriptor) {
+      const detection = await detectFace(img, faceApiOptions);
+      if (!detection?.descriptor) {
         toast(detectionToastVariants.undetected);
         return;
       }
-      const descriptorArray = Array.from(descriptor);
+
+      const descriptorArray = Array.from(detection?.descriptor);
       await setScannedDescriptor(descriptorArray);
       setScannedSrc(img.src);
     } catch (err) {
@@ -99,6 +107,31 @@ export function Scanner() {
     } finally {
       setScanLoading(false);
     }
+  };
+
+  const onImageImageLoad = async (
+    imgRef: React.RefObject<HTMLImageElement | null>,
+    canvasRef: React.RefObject<HTMLCanvasElement | null>
+  ) => {
+    if (!imgRef.current || !canvasRef.current || status !== "success") return;
+
+    const imgElement = imgRef.current;
+    const canvas = canvasRef.current;
+
+    const { width, height } = imgElement.getBoundingClientRect();
+    canvas.width = width;
+    canvas.height = height;
+
+    const detections = await detectFace(
+      imgElement,
+      faceApiOptions,
+    );
+    if (!detections) return;
+    const resized = faceapi.resizeResults(detections, { width, height });
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    faceapi.draw.drawDetections(canvas, resized);
   };
 
   return (
@@ -143,10 +176,22 @@ export function Scanner() {
               alignItems="center"
             >
               <Image
+                ref={registeredImgRef}
                 src={registeredSrc || ""}
                 h={{ base: "220px", md: "339px" }}
                 objectFit="contain"
                 crossOrigin="anonymous"
+                onLoad={() =>
+                  onImageImageLoad(registeredImgRef, registeredCanvasRef)
+                }
+              />
+              <canvas
+                ref={registeredCanvasRef}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
               />
 
               <Button
@@ -210,13 +255,27 @@ export function Scanner() {
                 {scanLoading ? (
                   <Spinner size="xs" mr={2} />
                 ) : (
-                  <Image
-                    ref={imgRef}
-                    src={scannedSrc || ""}
-                    h={{ base: "200px", md: "340px" }}
-                    crossOrigin="anonymous"
-                    objectFit="contain"
-                  />
+                  <Box position="relative" display="inline-block">
+                    <Image
+                      as="img"
+                      ref={scannedImgRef}
+                      src={scannedSrc || ""}
+                      h={{ base: "200px", md: "340px" }}
+                      crossOrigin="anonymous"
+                      objectFit="contain"
+                      onLoad={() =>
+                        onImageImageLoad(scannedImgRef, scannedCanvasRef)
+                      }
+                    />
+                    <canvas
+                      ref={scannedCanvasRef}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                      }}
+                    />
+                  </Box>
                 )}
               </Flex>
 

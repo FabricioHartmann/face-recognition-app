@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
-import { useFaceApiModels } from "../useFaceApiModels";
-import { detectFaceDescriptor } from "../../utils/faceApiManipulators/detectFaceDescriptor";
 
 export function useFaceComparing(
   registeredDescriptor: number[] | null,
