@@ -1,7 +1,6 @@
 import { openDB } from "idb";
 
-//Introduzido para fins de estudos. As imagens não precisam ser salvas na storage, e se fossem, poderiam ser comprimidas.
-
+//Introduzido para fins de estudo. A imagem não precisa ser salva na storage (e se fosse, poderia ser comprimida).
 export const db = await openDB("faces-db", 1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains("images")) {

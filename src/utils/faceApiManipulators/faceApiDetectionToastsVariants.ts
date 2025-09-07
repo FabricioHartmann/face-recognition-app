@@ -1,18 +1,9 @@
 import type { UseToastOptions } from "@chakra-ui/react";
 
 export const detectionToastVariants: Record<
-  "detected" | "undetected" | "error",
+  "undetected" | "error",
   UseToastOptions
 > = {
-  detected: {
-    id: "detection-success",
-    title: "Rostos detectados com sucesso",
-    description: "O rosto foi detectado e o descriptor foi salvo.",
-    status: "success",
-    duration: 5000,
-    isClosable: true,
-    position: "top-right",
-  },
   undetected: {
     id: "detection-fail",
     title: "Nenhum rosto detectado",

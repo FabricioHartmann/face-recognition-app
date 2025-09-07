@@ -5,7 +5,6 @@ import { useFaceApiModels } from "../useFaceApiModels";
 
 export function useFaceDetection(imgElement: HTMLImageElement | null) {
   const [loading, setLoading] = useState(false);
-  const [hasFace, setHasFace] = useState<boolean | null>(null);
   const [descriptor, setDescriptor] = useState<Float32Array | null>(null);
   const status = useFaceApiModels();
 
@@ -21,16 +20,12 @@ export function useFaceDetection(imgElement: HTMLImageElement | null) {
           .withFaceDescriptor();
 
         if (!detection) {
-          setHasFace(false);
           setDescriptor(null);
           return;
         }
-
-        setHasFace(true);
         setDescriptor(detection.descriptor);
       } catch (err) {
         console.error("Erro na detecção facial:", err);
-        setHasFace(false);
       } finally {
         setLoading(false);
       }
@@ -39,5 +34,5 @@ export function useFaceDetection(imgElement: HTMLImageElement | null) {
     detect(imgElement);
   }, [imgElement, status]);
 
-  return { loading, hasFace, descriptor, status };
+  return { loading, descriptor, status };
 }
