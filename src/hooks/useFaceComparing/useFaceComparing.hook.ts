@@ -14,7 +14,7 @@ export function useFaceComparing(
       setDistance(null);
       return;
     }
-    if (registeredDescriptor?.length !== scannedDescriptor.length) {
+    if (scannedDescriptor?.length && registeredDescriptor?.length !== scannedDescriptor.length) {
       console.log(
         "Descriptors com tamanhos diferentes, não é possível comparar"
       );
