@@ -7,7 +7,7 @@ import {
   Image,
   Heading,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useImageStore } from "../../store/imageStore";
 import { toast } from "../../components/ui/toast";
 import { detectionToastVariants } from "../../utils/faceApiManipulators/faceApiDetectionToastsVariants";
@@ -16,21 +16,20 @@ import { MainLayout } from "../../components/MainLayout";
 import { SourceSelector } from "../../components/SourceSelector";
 import { useFaceComparing } from "../../hooks/useFaceComparing";
 import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
-import { getImage, saveImage } from "../../utils/dbManipulators/db";
 import { loadImageElement } from "../../utils/imageManipulators/loadImageElement";
 import { detectFace } from "../../utils/faceApiManipulators/detectFace";
 import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
 import * as faceapi from "face-api.js";
+import { compressFileToBase64 } from "../../utils/imageManipulators/CompressFileToBase64";
 
 export function Scanner() {
   const {
-    registeredFileId,
+    registeredFile,
     registeredDescriptor,
-    setRegisteredFileId,
+    setRegisteredFile,
     setRegisteredDescriptor,
     clearAll,
   } = useImageStore();
-  const [registeredSrc, setRegisteredSrc] = useState<string | null>(null);
   const [scannedSrc, setScannedSrc] = useState<string | null>(null);
   const [scannedDescriptor, setScannedDescriptor] = useState<number[]>([]);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -47,17 +46,9 @@ export function Scanner() {
     scannedDescriptor
   );
 
-  useEffect(() => {
-    if (registeredFileId) {
-      getImage(registeredFileId as number).then((blob) => {
-        if (blob) setRegisteredSrc(URL.createObjectURL(blob));
-      });
-    }
-  }, [registeredFileId]);
-
   const deleteComparisonImage = async () => {
     setScannedDescriptor([]);
-    setScannedSrc(null);
+    setScannedSrc("");
   };
 
   const deleteAllImages = async () => {
@@ -79,8 +70,8 @@ export function Scanner() {
 
       const descriptorArray = Array.from(detection?.descriptor);
       setRegisteredDescriptor(descriptorArray);
-      const id = await saveImage(file);
-      setRegisteredFileId(id as number);
+      const compressedImg = await compressFileToBase64(file);
+      setRegisteredFile(compressedImg);
     } catch (err) {
       toast(detectionToastVariants.error);
     } finally {
@@ -122,10 +113,7 @@ export function Scanner() {
     canvas.width = width;
     canvas.height = height;
 
-    const detections = await detectFace(
-      imgElement,
-      faceApiOptions,
-    );
+    const detections = await detectFace(imgElement, faceApiOptions);
     if (!detections) return;
     const resized = faceapi.resizeResults(detections, { width, height });
     const ctx = canvas.getContext("2d");
@@ -154,11 +142,11 @@ export function Scanner() {
               mb={{ base: "4", md: "6" }}
               textAlign={{ base: "start", md: "center" }}
             >
-              {!!registeredFileId ? "Imagem registrada" : "Registre uma imagem"}
+              {!!registeredFile ? "Imagem registrada" : "Registre uma imagem"}
             </Heading>
           </Flex>
 
-          <RenderIf condition={!registeredFileId}>
+          <RenderIf condition={!registeredFile}>
             <SourceSelector
               onImageChange={handleRegisterImage}
               onImageCapture={handleRegisterImage}
@@ -166,7 +154,7 @@ export function Scanner() {
               fileOrigin="register"
             />
           </RenderIf>
-          <RenderIf condition={!!registeredFileId}>
+          <RenderIf condition={!!registeredFile}>
             <Box
               position="relative"
               bg="black"
@@ -177,7 +165,7 @@ export function Scanner() {
             >
               <Image
                 ref={registeredImgRef}
-                src={registeredSrc || ""}
+                src={registeredFile || ""}
                 h={{ base: "220px", md: "339px" }}
                 objectFit="contain"
                 crossOrigin="anonymous"
@@ -189,8 +177,6 @@ export function Scanner() {
                 ref={registeredCanvasRef}
                 style={{
                   position: "absolute",
-                  top: 0,
-                  left: 0,
                 }}
               />
 
@@ -221,7 +207,7 @@ export function Scanner() {
           >
             Nova imagem
           </Heading>
-          <RenderIf condition={!registeredFileId}>
+          <RenderIf condition={!registeredFile}>
             <>
               <Flex
                 align="center"
@@ -232,9 +218,7 @@ export function Scanner() {
               </Flex>
             </>
           </RenderIf>
-          <RenderIf
-            condition={!!registeredFileId && !scannedDescriptor?.length}
-          >
+          <RenderIf condition={!!registeredFile && !scannedDescriptor?.length}>
             <SourceSelector
               onImageChange={handleNewImageToCompare}
               onImageCapture={handleNewImageToCompare}
@@ -242,9 +226,7 @@ export function Scanner() {
               fileOrigin="comparison"
             />
           </RenderIf>
-          <RenderIf
-            condition={!!registeredFileId && !!scannedDescriptor?.length}
-          >
+          <RenderIf condition={!!registeredFile && !!scannedDescriptor?.length}>
             <Box width="100%" position="relative">
               <Flex
                 justify="center"
@@ -300,7 +282,7 @@ export function Scanner() {
         condition={
           !detectionLoading &&
           match !== null &&
-          !!registeredFileId &&
+          !!registeredFile &&
           !!scannedDescriptor?.length
         }
       >

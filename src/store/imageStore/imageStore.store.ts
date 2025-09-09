@@ -5,14 +5,14 @@ import type { ImageStateProps } from "./imageStore.types";
 export const useImageStore = create(
   persist<ImageStateProps>(
     (set) => ({
-      registeredFileId: null,
+      registeredFile: "",
       registeredDescriptor: [],
-      setRegisteredFileId: (id) => set({ registeredFileId: id }),
+      setRegisteredFile: (file) => set({ registeredFile: file }),
       setRegisteredDescriptor: (descriptor) =>
         set({ registeredDescriptor: descriptor }),
       clearAll: () =>
         set({
-          registeredFileId: null,
+          registeredFile: "",
           registeredDescriptor: [],
         }),
     }),
