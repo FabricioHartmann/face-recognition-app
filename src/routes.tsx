@@ -1,7 +1,7 @@
-import { ImageRegister } from "./pages/ImageRegister";
-import { Scanner } from "./pages/Scanner";
-import { Home } from "./pages/Home";
 import type { ReactElement } from "react";
+import { Home } from "./pages/Home";
+import { Scanner } from "./pages/Scanner";
+
 
 export interface AppRoute {
   path: string;
@@ -10,6 +10,5 @@ export interface AppRoute {
 
 export const appRoutes: AppRoute[] = [
   { path: "/", element: <Home /> },
-  { path: "/registrar-imagem", element: <ImageRegister /> },
   { path: "/comparar-rostos", element: <Scanner /> },
 ];

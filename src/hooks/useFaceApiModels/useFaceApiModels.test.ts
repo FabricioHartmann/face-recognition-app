@@ -1,8 +1,8 @@
-import { renderHook, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
-import { useFaceApiModels } from './'
 import * as faceapi from 'face-api.js'
+import { renderHook, waitFor } from '@testing-library/react'
 import type { FaceApiStatus } from './useFaceApiModels.types'
+import { useFaceApiModels } from './'
 
 vi.mock('face-api.js', () => ({
   nets: {

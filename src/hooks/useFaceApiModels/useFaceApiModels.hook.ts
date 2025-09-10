@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
 import * as faceapi from "face-api.js"
+import { useEffect, useState } from "react"
 import type { FaceApiStatus } from "./useFaceApiModels.types"
 
 export function useFaceApiModels() {

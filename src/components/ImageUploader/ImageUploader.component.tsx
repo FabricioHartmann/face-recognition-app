@@ -7,8 +7,8 @@ export function ImageUploader({
   textLabel,
   buttonLabel,
 }: ImageUploaderProps) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   function handleFile(file: File) {
     onImageChange(file);
