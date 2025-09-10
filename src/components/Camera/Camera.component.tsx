@@ -7,10 +7,10 @@ import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
 import type { CameraProps } from "./Camera.types";
 
 export function Camera({ onCapture, fileOrigin }: CameraProps) {
-  const webcamRef = useRef<Webcam>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [cameraError, setCameraError] = useState(false);
   const [isMirrored, setIsMirrored] = useState(false);
+  const webcamRef = useRef<Webcam>(null);
 
   const loadCamera = useCallback(() => {
     setIsLoading(false);

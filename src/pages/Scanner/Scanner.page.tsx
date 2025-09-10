@@ -25,13 +25,6 @@ import { MainLayout } from "../../components/MainLayout";
 import { SourceSelector } from "../../components/SourceSelector";
 
 export function Scanner() {
-  const {
-    registeredFile,
-    registeredDescriptor,
-    setRegisteredFile,
-    setRegisteredDescriptor,
-    clearAll,
-  } = useImageStore();
   const [scannedSrc, setScannedSrc] = useState<string | null>(null);
   const [scannedDescriptor, setScannedDescriptor] = useState<number[]>([]);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -40,6 +33,13 @@ export function Scanner() {
   const registeredCanvasRef = useRef<HTMLCanvasElement>(null);
   const scannedImgRef = useRef<HTMLImageElement>(null);
   const scannedCanvasRef = useRef<HTMLCanvasElement>(null);
+  const {
+    registeredFile,
+    registeredDescriptor,
+    setRegisteredFile,
+    setRegisteredDescriptor,
+    clearAll,
+  } = useImageStore();
   const { loading: detectionLoading, status } = useFaceDetection(
     scannedImgRef.current
   );
