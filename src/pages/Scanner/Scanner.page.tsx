@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -7,20 +8,21 @@ import {
   Image,
   Heading,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import { useImageStore } from "../../store/imageStore";
+import * as faceapi from "face-api.js";
 import { toast } from "../../components/ui/toast";
+
+import { detectFace } from "../../utils/faceApiManipulators/detectFace";
+import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
+import { compressFileToBase64 } from "../../utils/imageManipulators/CompressFileToBase64";
 import { detectionToastVariants } from "../../utils/faceApiManipulators/faceApiDetectionToastsVariants";
+import { loadImageElement } from "../../utils/imageManipulators/loadImageElement";
+import { useFaceComparing } from "../../hooks/useFaceComparing";
+import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
+import { useImageStore } from "../../store/imageStore";
+
 import { RenderIf } from "../../components/RenderIf";
 import { MainLayout } from "../../components/MainLayout";
 import { SourceSelector } from "../../components/SourceSelector";
-import { useFaceComparing } from "../../hooks/useFaceComparing";
-import { useFaceDetection } from "../../hooks/useFaceDetection/useFaceDetection.hook";
-import { loadImageElement } from "../../utils/imageManipulators/loadImageElement";
-import { detectFace } from "../../utils/faceApiManipulators/detectFace";
-import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
-import * as faceapi from "face-api.js";
-import { compressFileToBase64 } from "../../utils/imageManipulators/CompressFileToBase64";
 
 export function Scanner() {
   const {

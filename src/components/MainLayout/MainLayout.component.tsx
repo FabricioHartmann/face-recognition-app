@@ -1,6 +1,6 @@
 import { Box, Center, Flex } from "@chakra-ui/react";
-import type { MainLayoutrProps } from "./MainLayout.types";
 import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
+import type { MainLayoutrProps } from "./MainLayout.types";
 
 export const MainLayout = ({ children }: MainLayoutrProps) => {
   const isMobile = useIsMobile();

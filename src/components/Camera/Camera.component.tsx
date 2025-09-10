@@ -1,10 +1,10 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
-import { RenderIf } from "../RenderIf";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { FiCamera } from "react-icons/fi";
-import type { CameraProps } from "./Camera.types";
+import { RenderIf } from "../RenderIf";
 import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
+import type { CameraProps } from "./Camera.types";
 
 export function Camera({ onCapture, fileOrigin }: CameraProps) {
   const webcamRef = useRef<Webcam>(null);
