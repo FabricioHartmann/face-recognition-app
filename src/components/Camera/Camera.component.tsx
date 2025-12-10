@@ -36,11 +36,6 @@ export function Camera({ onCapture, fileOrigin }: CameraProps) {
           <Text>Carregando câmera...</Text>
         </Box>
       </RenderIf>
-      <RenderIf condition={cameraError}>
-        <Box>
-          <Text>Erro ao acessar a câmera.</Text>
-        </Box>
-      </RenderIf>
       <Flex direction="column" gap={2}>
         <Flex
           position={"relative"}
@@ -73,26 +68,37 @@ export function Camera({ onCapture, fileOrigin }: CameraProps) {
             </Button>
           </RenderIf>
         </Flex>
-        <Flex direction={"column"} justify="space-between" gap={2}>
-          <Button
-            size={"sm"}
-            disabled
-            width="100%"
-            onClick={capture}
-            leftIcon={<FiTarget />}
-          >
-            Detectar em tempo real
-          </Button>
-          <Button
-            size={"sm"}
-            width="100%"
-            colorScheme="green"
-            onClick={capture}
-            leftIcon={<FiCamera />}
-          >
-            Capturar
-          </Button>
-        </Flex>
+        <RenderIf condition={!cameraError}>
+          <Flex direction={"column"} justify="space-between" gap={2}>
+            {/* TODO: feature de deteccão em tempo real com webcam */}
+            <Button
+              size={"sm"}
+              disabled
+              width="100%"
+              onClick={capture}
+              leftIcon={<FiTarget />}
+            >
+              Detectar em tempo real
+            </Button>
+            <Button
+              size={"sm"}
+              width="100%"
+              colorScheme="green"
+              onClick={capture}
+              leftIcon={<FiCamera />}
+            >
+              Capturar
+            </Button>
+          </Flex>
+        </RenderIf>
+        <RenderIf condition={cameraError}>
+          <Box>
+            <Text color={"red"}>Erro ao acessar a câmera</Text>
+            <Text color={"red"}>
+              Verifique conexão ou permissão do navegador
+            </Text>
+          </Box>
+        </RenderIf>
       </Flex>
     </Flex>
   );

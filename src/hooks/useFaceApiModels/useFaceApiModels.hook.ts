@@ -1,28 +1,28 @@
-import * as faceapi from "face-api.js"
-import { useEffect, useState } from "react"
-import type { FaceApiStatus } from "./useFaceApiModels.types"
+import * as faceapi from "face-api.js";
+import { useEffect, useState } from "react";
+import type { FaceApiStatus } from "./useFaceApiModels.types";
 
 export function useFaceApiModels() {
-  const [status, setStatus] = useState<FaceApiStatus>("idle")
+  const [status, setStatus] = useState<FaceApiStatus>("idle");
 
   useEffect(() => {
-    if (status !== "idle") return
+    if (status !== "idle") return;
 
     const loadModels = async () => {
-      setStatus("loading")
+      setStatus("loading");
       try {
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
           faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
           faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-        ])
-        setStatus("success")
+        ]);
+        setStatus("success");
       } catch (err) {
-        setStatus("error")
+        setStatus("error");
       }
-    }
-    loadModels()
-  }, [status])
+    };
+    loadModels();
+  }, [status]);
 
-  return status
+  return status;
 }

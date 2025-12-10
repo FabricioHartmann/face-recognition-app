@@ -1,7 +1,7 @@
 import type { UseToastOptions } from "@chakra-ui/react";
 
 export const detectionToastVariants: Record<
-  "undetected" | "error",
+  "undetected" | "error" | "camera",
   UseToastOptions
 > = {
   undetected: {
@@ -17,6 +17,15 @@ export const detectionToastVariants: Record<
     id: "detection-error",
     title: "Erro ao registrar imagem",
     description: "Houve algum erro ao tentar registrar a imagem.",
+    status: "error",
+    duration: 5000,
+    isClosable: true,
+    position: "top-right",
+  },
+  camera: {
+    id: "camera-error",
+    title: "Erro ao detectar câmera",
+    description: "Houve algum erro com a câmera, verifique conexão ou permissões do navegador",
     status: "error",
     duration: 5000,
     isClosable: true,

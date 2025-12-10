@@ -48,12 +48,14 @@ export function Scanner() {
     scannedDescriptor
   );
 
-  const deleteComparisonImage = async () => {
+  // TODO: mover funcoes para um hook para isolar o componente
+
+  const deleteComparisonImage = () => {
     setScannedDescriptor([]);
     setScannedSrc("");
   };
 
-  const deleteAllImages = async () => {
+  const deleteAllImages = () => {
     clearAll();
     deleteComparisonImage();
   };
@@ -66,7 +68,7 @@ export function Scanner() {
       const detection = await detectFace(img, faceApiOptions);
       if (!detection?.descriptor) {
         toast(detectionToastVariants.undetected);
-        clearAll();
+        deleteAllImages();
         return;
       }
 
@@ -133,20 +135,13 @@ export function Scanner() {
         gap={{ base: "4", md: "8" }}
       >
         <Box flex="1">
-          <Flex
-            justify={"space-between"}
-            alignItems={"center"}
-            align={"center"}
-            textAlign={"center"}
+          <Heading
+            size={{ base: "sm", md: "md" }}
+            mb={{ base: "4", md: "6" }}
+            textAlign={{ base: "start", md: "center" }}
           >
-            <Heading
-              size={{ base: "sm", md: "md" }}
-              mb={{ base: "4", md: "6" }}
-              textAlign={{ base: "start", md: "center" }}
-            >
-              {!!registeredFile ? "Imagem registrada" : "Registre uma imagem"}
-            </Heading>
-          </Flex>
+            {!!registeredFile ? "Imagem registrada" : "Registre uma imagem"}
+          </Heading>
 
           <RenderIf condition={!registeredFile}>
             <SourceSelector
@@ -297,7 +292,8 @@ export function Scanner() {
             <Button
               size={"sm"}
               width={{ base: "100%", md: "240px" }}
-              onClick={clearAll}
+              onClick={deleteAllImages}
+              colorScheme="green"
             >
               Registrar nova imagem
             </Button>
