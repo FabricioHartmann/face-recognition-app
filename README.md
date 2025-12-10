@@ -1,6 +1,46 @@
-# React + TypeScript + Vite
+# Face Recognition App (React + TypeScript + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projeto utilizando React + TypeScript com face-api.js para detecção e reconhecimento facial através de imagens e vídeo em tempo real.
+
+Este é um projeto simples, com o intuito de aprender mais sobre reconhecimento facial. Ideias e contribuições serão bem vindas!
+
+# Instalar dependências
+npm install
+
+# Rodar em ambiente de desenvolvimento
+npm run dev
+
+Aplicação acessível (normalmente) em:
+http://localhost:5173/
+
+# Gerar build de produção
+npm run build
+
+# Visualizar build
+npm run preview
+
+
+
+# Estado de desenvolvimento
+
+| Funcionalidade                  | Status             |
+| ------------------------------- | ------------------ |
+| Detecção facial em imagem       | Implementado       |
+| Captura via webcam              | Implementado       |
+| Comparação de descritores       | Implementado       |
+| Monitoramento contínuo em vídeo | Em desenvolvimento |
+| Detecção e comparacão múltiplas | Em breve |
+| Integração com fotos salvas previamente | Em breve |
+
+# Screenshots
+
+<img width="750" height="574" alt="image1" src="https://github.com/user-attachments/assets/395b8ba5-8265-4f31-93c3-04c6ff62592f" />
+<img width="373" height="697" alt="image2" src="https://github.com/user-attachments/assets/3df7001c-c81a-4763-b6dc-f5150a454d4a" />
+<img width="373" height="697" alt="image3" src="https://github.com/user-attachments/assets/a7ccef0d-6b72-41ff-9cc8-d5acbbe7b5e7" />
+
+
+-----
+
 
 Currently, two official plugins are available:
 
