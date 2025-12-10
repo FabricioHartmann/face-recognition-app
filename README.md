@@ -31,6 +31,7 @@ npm run preview
 | Monitoramento contínuo em vídeo | Em desenvolvimento |
 | Detecção e comparacão múltiplas | Em breve |
 | Integração com fotos salvas previamente | Em breve |
+| Melhoria gerais na interface | Em breve |
 
 # Screenshots
 
