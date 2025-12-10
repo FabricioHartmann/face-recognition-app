@@ -11,6 +11,10 @@ export function Home() {
     navigate("/comparar-rostos");
   };
 
+  const goToHowItWorksPage = () => {
+    navigate("/como-funciona");
+  };
+
   return (
     <Flex direction="column" minH="100vh" p={4}>
       <Flex direction="column" flex="1" justify="center" align="center">
@@ -21,14 +25,35 @@ export function Home() {
           Aplicativo simples para testar reconhecimento facial com face-api
         </Text>
         <RenderIf condition={!isMobile}>
-          <Button onClick={goToComparingPage} w="164px" rounded="l1" mt={8}>
+          <Button
+            onClick={goToComparingPage}
+            w="164px"
+            rounded="l1"
+            mt={8}
+            colorScheme="green"
+          >
             Iniciar
+          </Button>
+          <Button onClick={goToHowItWorksPage} w="164px" rounded="l1" mt={4}>
+            Como funciona?
           </Button>
         </RenderIf>
       </Flex>
       <RenderIf condition={isMobile}>
-        <Flex w="100%" justifyContent={'center'}>
-          <Button onClick={goToComparingPage} w={{ base: "100%", md: "164px" }} rounded="l1">
+        <Flex w="100%" justifyContent={"center"} direction={"column"} gap={4}>
+          <Button
+            onClick={goToHowItWorksPage}
+            w={{ base: "100%", md: "164px" }}
+            rounded="l1"
+          >
+            Como funciona?
+          </Button>
+          <Button
+            onClick={goToComparingPage}
+            w={{ base: "100%", md: "164px" }}
+            rounded="l1"
+            colorScheme="green"
+          >
             Iniciar
           </Button>
         </Flex>
