@@ -48,8 +48,6 @@ export function Scanner() {
     scannedDescriptor
   );
 
-  // TODO: mover funcoes para um hook para isolar o componente
-
   const deleteComparisonImage = () => {
     setScannedDescriptor([]);
     setScannedSrc("");
@@ -155,7 +153,7 @@ export function Scanner() {
             <Box
               position="relative"
               bg="black"
-              h={{ base: "220px", md: "339px" }}
+              h={{ base: "calc(50vh - 108px)", md: "339px" }}
               display="flex"
               justifyContent="center"
               alignItems="center"
@@ -163,7 +161,7 @@ export function Scanner() {
               <Image
                 ref={registeredImgRef}
                 src={registeredFile || ""}
-                h={{ base: "220px", md: "339px" }}
+                h={{ base: "100%", md: "339px" }}
                 objectFit="contain"
                 crossOrigin="anonymous"
                 onLoad={() =>
@@ -195,82 +193,88 @@ export function Scanner() {
             </Text>
           </RenderIf>
         </Box>
+        <RenderIf condition={!!registeredFile}>
+          <Box flex="1">
+            <Heading
+              size={{ base: "sm", md: "md" }}
+              mb={{ base: "4", md: "6" }}
+              textAlign={{ base: "start", md: "center" }}
+            >
+              Nova imagem
+            </Heading>
+            <RenderIf condition={!registeredFile}>
+              <>
+                <Flex
+                  align="center"
+                  justify="center"
+                  h={{ base: "148px", md: "396px" }}
+                >
+                  <Text textAlign="center">
+                    Registre uma imagem para iniciar
+                  </Text>
+                </Flex>
+              </>
+            </RenderIf>
+            <RenderIf
+              condition={!!registeredFile && !scannedDescriptor?.length}
+            >
+              <SourceSelector
+                onImageChange={handleNewImageToCompare}
+                onImageCapture={handleNewImageToCompare}
+                uploaderButtonLabel="Enviar imagem"
+                fileOrigin="comparison"
+              />
+            </RenderIf>
+            <RenderIf
+              condition={!!registeredFile && !!scannedDescriptor?.length}
+            >
+              <Box width="100%" position="relative">
+                <Flex justify="center" align="center" bg="black">
+                  {scanLoading ? (
+                    <Spinner size="xs" mr={2} />
+                  ) : (
+                    <Box
+                      position="relative"
+                      display="inline-block"
+                      h={{ base: "calc(50vh - 108px)", md: "340px" }}
+                    >
+                      <Image
+                        as="img"
+                        ref={scannedImgRef}
+                        src={scannedSrc || ""}
+                        h={{ base: "100%", md: "340px" }}
+                        crossOrigin="anonymous"
+                        objectFit="contain"
+                        onLoad={() =>
+                          onImageImageLoad(scannedImgRef, scannedCanvasRef)
+                        }
+                      />
+                      <canvas
+                        ref={scannedCanvasRef}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                        }}
+                      />
+                    </Box>
+                  )}
+                </Flex>
 
-        <Box flex="1">
-          <Heading
-            size={{ base: "sm", md: "md" }}
-            mb={{ base: "4", md: "6" }}
-            textAlign={{ base: "start", md: "center" }}
-          >
-            Nova imagem
-          </Heading>
-          <RenderIf condition={!registeredFile}>
-            <>
-              <Flex
-                align="center"
-                justify="center"
-                h={{ base: "148px", md: "396px" }}
-              >
-                <Text textAlign="center">Registre uma imagem para iniciar</Text>
-              </Flex>
-            </>
-          </RenderIf>
-          <RenderIf condition={!!registeredFile && !scannedDescriptor?.length}>
-            <SourceSelector
-              onImageChange={handleNewImageToCompare}
-              onImageCapture={handleNewImageToCompare}
-              uploaderButtonLabel="Enviar imagem"
-              fileOrigin="comparison"
-            />
-          </RenderIf>
-          <RenderIf condition={!!registeredFile && !!scannedDescriptor?.length}>
-            <Box width="100%" position="relative">
-              <Flex
-                justify="center"
-                align="center"
-                bg="black"
-                h={{ base: "200px", md: "340px" }}
-              >
-                {scanLoading ? (
-                  <Spinner size="xs" mr={2} />
-                ) : (
-                  <Box position="relative" display="inline-block">
-                    <Image
-                      as="img"
-                      ref={scannedImgRef}
-                      src={scannedSrc || ""}
-                      h={{ base: "200px", md: "340px" }}
-                      crossOrigin="anonymous"
-                      objectFit="contain"
-                      onLoad={() =>
-                        onImageImageLoad(scannedImgRef, scannedCanvasRef)
-                      }
-                    />
-                    <canvas
-                      ref={scannedCanvasRef}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                      }}
-                    />
-                  </Box>
-                )}
-              </Flex>
-
-              <Button
-                size="sm"
-                colorScheme="red"
-                position="absolute"
-                bottom={2}
-                right={2}
-                onClick={deleteComparisonImage}
-              >
-                Excluir imagem
-              </Button>
-            </Box>
-          </RenderIf>
-        </Box>
+                <Button
+                  size="sm"
+                  colorScheme="red"
+                  position="absolute"
+                  bottom={2}
+                  right={2}
+                  onClick={deleteComparisonImage}
+                >
+                  Excluir imagem
+                </Button>
+              </Box>
+            </RenderIf>
+          </Box>
+        </RenderIf>
       </Flex>
       <RenderIf condition={detectionLoading}>
         <Spinner size="xs" mr={2} /> Comparando imagens...
