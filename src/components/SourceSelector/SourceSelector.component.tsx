@@ -17,16 +17,15 @@ export function SourceSelector({
   onImageCapture,
   uploaderButtonLabel,
   uploaderTextLabel,
-  fileOrigin,
 }: SourceSelectorProps) {
   return (
     <Tabs variant="enclosed" colorScheme="" isFitted>
       <TabList mb="4">
         <Tab>
-          <Icon as={FiImage} mr={2} /> Galeria
+          <Icon as={FiImage} mr={2} /> Foto
         </Tab>
         <Tab>
-          <Icon as={FiCamera} mr={2} /> Câmera
+          <Icon as={FiCamera} mr={2} /> Vídeo
         </Tab>
       </TabList>
 
@@ -40,7 +39,10 @@ export function SourceSelector({
         </TabPanel>
         <TabPanel padding={0}>
           <Flex minH={{ base: "120px", md: "280px" }}>
-            <Camera onCapture={onImageCapture} fileOrigin={fileOrigin} />
+            <Camera
+              fileOrigin="comparison"
+              onFaceDetected={onImageCapture}
+            />
           </Flex>
         </TabPanel>
       </TabPanels>
