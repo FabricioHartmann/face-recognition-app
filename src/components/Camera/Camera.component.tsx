@@ -119,21 +119,52 @@ export function Camera({ onFaceDetected, onCancel, fileOrigin }: CameraProps) {
           </Button>
         </Flex>
         <Flex align="center" bg="black" h="100%">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            muted
-            playsInline
-            screenshotFormat="image/jpeg"
-            videoConstraints={{ facingMode }}
-            onUserMedia={() => setIsLoading(false)}
-            onUserMediaError={handleCameraError}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
+          <RenderIf condition={!isMobile}>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              muted
+              playsInline
+              screenshotFormat="image/jpeg"
+              videoConstraints={{ facingMode }}
+              onUserMedia={() => setIsLoading(false)}
+              onUserMediaError={handleCameraError}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </RenderIf>
+
+          <RenderIf condition={isMobile}>
+            <Flex
+              position="fixed"
+              inset={0}
+              w="100vw"
+              h="100dvh"
+              bg="black"
+              overflow="hidden"
+            >
+              <Webcam
+                ref={webcamRef}
+                audio={false}
+                muted
+                playsInline
+                screenshotFormat="image/jpeg"
+                videoConstraints={{ facingMode }}
+                onUserMedia={() => setIsLoading(false)}
+                onUserMediaError={handleCameraError}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Flex>
+          </RenderIf>
         </Flex>
 
         <RenderIf condition={cameraError}>
