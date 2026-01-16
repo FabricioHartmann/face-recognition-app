@@ -23,6 +23,7 @@ import { useImageStore } from "../../store/imageStore";
 import { RenderIf } from "../../components/RenderIf";
 import { MainLayout } from "../../components/MainLayout";
 import { SourceSelector } from "../../components/SourceSelector";
+import { ImageUploader } from "../../components/ImageUploader";
 
 export function Scanner() {
   const [scannedSrc, setScannedSrc] = useState<string | null>(null);
@@ -142,11 +143,9 @@ export function Scanner() {
           </Heading>
 
           <RenderIf condition={!registeredFile}>
-            <SourceSelector
+            <ImageUploader
               onImageChange={handleRegisterImage}
-              onImageCapture={handleRegisterImage}
-              uploaderButtonLabel="Registrar imagem"
-              fileOrigin="register"
+              buttonLabel="Registrar imagem"
             />
           </RenderIf>
           <RenderIf condition={!!registeredFile}>
@@ -188,9 +187,7 @@ export function Scanner() {
             </Box>
           </RenderIf>
           <RenderIf condition={registerLoading}>
-            <Text mt={2}>
-              <Spinner size="xs" mr={2} /> Registrando imagem...
-            </Text>
+            <Spinner size="xs" mr={2} /> Registrando imagem...
           </RenderIf>
         </Box>
         <RenderIf condition={!!registeredFile}>
@@ -222,7 +219,6 @@ export function Scanner() {
                 onImageChange={handleNewImageToCompare}
                 onImageCapture={handleNewImageToCompare}
                 uploaderButtonLabel="Enviar imagem"
-                fileOrigin="comparison"
               />
             </RenderIf>
             <RenderIf

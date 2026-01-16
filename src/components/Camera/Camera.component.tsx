@@ -1,33 +1,75 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
+import * as faceapi from "face-api.js";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { FiCamera, FiRefreshCw, FiTarget } from "react-icons/fi";
-import { RenderIf } from "../RenderIf";
-import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
-import type { CameraProps } from "./Camera.types";
+import { FiRefreshCw, FiTarget } from "react-icons/fi";
 import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
+import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
+import { RenderIf } from "../RenderIf";
+import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
+import type { CameraProps } from "./Camera.types";
 
-export function Camera({ onCapture, fileOrigin }: CameraProps) {
+export function Camera({ onFaceDetected, fileOrigin }: CameraProps) {
+  const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [cameraError, setCameraError] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
     "environment"
   );
   const webcamRef = useRef<Webcam>(null);
-  const isMobile = useIsMobile();
+  const detectionIntervalRef = useRef<number | null>(null);
+  const hasDetectedRef = useRef(false);
 
   function handleCameraError() {
     setIsLoading(false);
     setCameraError(true);
   }
 
-  function capture() {
+  function stopDetection() {
+    if (detectionIntervalRef.current) {
+      window.clearInterval(detectionIntervalRef.current);
+      detectionIntervalRef.current = null;
+    }
+    setIsDetecting(false);
+  }
+
+  function captureFrame() {
+    if (hasDetectedRef.current) return;
+
     const imageSrc = webcamRef.current?.getScreenshot();
     if (!imageSrc) return;
 
+    hasDetectedRef.current = true;
+    stopDetection();
+
     const file = base64ToFile(imageSrc, `capture-${fileOrigin}`);
-    onCapture(file);
+    onFaceDetected(file);
   }
+
+  function startDetection() {
+    if (!webcamRef.current?.video) return;
+
+    hasDetectedRef.current = false;
+    setIsDetecting(true);
+
+    detectionIntervalRef.current = window.setInterval(async () => {
+      const video = webcamRef.current?.video;
+      if (!video) return;
+
+      const detection = await faceapi.detectSingleFace(video, faceApiOptions);
+
+      if (detection) {
+        captureFrame();
+      }
+    }, 300);
+  }
+
+  useEffect(() => {
+    return () => {
+      stopDetection();
+    };
+  }, []);
 
   return (
     <Flex direction="column" gap={4} justify="center" width="100%">
@@ -36,9 +78,10 @@ export function Camera({ onCapture, fileOrigin }: CameraProps) {
           <Text>Carregando câmera...</Text>
         </Box>
       </RenderIf>
+
       <Flex direction="column" gap={2}>
         <Flex
-          position={"relative"}
+          position="relative"
           justify="center"
           align="center"
           bg="black"
@@ -50,53 +93,46 @@ export function Camera({ onCapture, fileOrigin }: CameraProps) {
             width="240px"
             ref={webcamRef}
             screenshotFormat="image/jpeg"
-            videoConstraints={{
-              facingMode,
-            }}
+            videoConstraints={{ facingMode }}
             onUserMedia={() => setIsLoading(false)}
             onUserMediaError={handleCameraError}
           />
+
           <RenderIf condition={isMobile}>
-            <Button position="absolute" bottom={2} right={2} size="sm">
-              <FiRefreshCw
-                onClick={() =>
-                  setFacingMode((prev) =>
-                    prev === "user" ? "environment" : "user"
-                  )
-                }
-              />
+            <Button
+              position="absolute"
+              bottom={2}
+              right={2}
+              size="sm"
+              onClick={() =>
+                setFacingMode((prev) =>
+                  prev === "user" ? "environment" : "user"
+                )
+              }
+            >
+              <FiRefreshCw />
             </Button>
           </RenderIf>
         </Flex>
+
         <RenderIf condition={!cameraError}>
-          <Flex direction={"column"} justify="space-between" gap={2}>
-            {/* TODO: feature de deteccão em tempo real com webcam */}
-            <Button
-              size={"sm"}
-              disabled
-              width="100%"
-              onClick={capture}
-              leftIcon={<FiTarget />}
-            >
-              Detectar em tempo real
-            </Button>
-            <Button
-              size={"sm"}
-              width="100%"
-              colorScheme="green"
-              onClick={capture}
-              leftIcon={<FiCamera />}
-            >
-              Capturar
-            </Button>
-          </Flex>
+          <Button
+            size="sm"
+            width="100%"
+            colorScheme="green"
+            leftIcon={<FiTarget />}
+            isLoading={isDetecting}
+            loadingText="Detectando rosto..."
+            onClick={startDetection}
+          >
+            Detectar em tempo real
+          </Button>
         </RenderIf>
+
         <RenderIf condition={cameraError}>
           <Box>
-            <Text color={"red"}>Erro ao acessar a câmera</Text>
-            <Text color={"red"}>
-              Verifique conexão ou permissão do navegador
-            </Text>
+            <Text color="red">Erro ao acessar a câmera</Text>
+            <Text color="red">Verifique conexão ou permissão do navegador</Text>
           </Box>
         </RenderIf>
       </Flex>
