@@ -118,14 +118,21 @@ export function Camera({ onFaceDetected, onCancel, fileOrigin }: CameraProps) {
             Detectar rosto
           </Button>
         </Flex>
-        <Flex align="center" bg="black">
+        <Flex align="center" bg="black" h="100%">
           <Webcam
             audio={false}
             ref={webcamRef}
+            muted
+            playsInline
             screenshotFormat="image/jpeg"
             videoConstraints={{ facingMode }}
             onUserMedia={() => setIsLoading(false)}
             onUserMediaError={handleCameraError}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
           />
         </Flex>
 
