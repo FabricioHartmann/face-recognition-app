@@ -23,15 +23,15 @@ npm run preview
 
 # Estado de desenvolvimento
 
-| Funcionalidade                  | Status             |
-| ------------------------------- | ------------------ |
-| Detecção facial em imagem       | Implementado       |
-| Captura via webcam              | Implementado       |
-| Comparação de descritores       | Implementado       |
-| Monitoramento contínuo em vídeo | Em desenvolvimento |
-| Detecção e comparacão múltiplas | Em breve |
-| Integração com fotos salvas previamente | Em breve |
-| Melhoria gerais na interface | Em breve |
+| Funcionalidade                          | Status             |
+| -------------------------------         | ------------------ |
+| Detecção facial em imagem               | Implementado       |
+| Captura via webcam                      | Implementado       |
+| Comparação de descritores               | Implementado       |
+| Monitoramento contínuo em vídeo         | Implementado       |
+| MVP em prod usando Vercel               | Implementado       |
+| Detecção e comparacão múltiplas         | Em breve           |
+| Integração com fotos salvas previamente | Em breve           |
 
 # Screenshots
 
