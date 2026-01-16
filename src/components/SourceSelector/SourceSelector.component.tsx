@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   Icon,
   Tab,
@@ -11,6 +12,9 @@ import { FiImage, FiCamera } from "react-icons/fi";
 import { Camera } from "../Camera/Camera.component";
 import { ImageUploader } from "../ImageUploader";
 import type { SourceSelectorProps } from "./SourceSelector.types";
+import { RenderIf } from "../RenderIf";
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
+import { useState } from "react";
 
 export function SourceSelector({
   onImageChange,
@@ -18,8 +22,21 @@ export function SourceSelector({
   uploaderButtonLabel,
   uploaderTextLabel,
 }: SourceSelectorProps) {
+  const isMobile = useIsMobile();
+  const [tabIndex, setTabIndex] = useState(0);
+
+  function handleCancelCamera() {
+    setTabIndex(0);
+  }
+
   return (
-    <Tabs variant="enclosed" colorScheme="" isFitted>
+    <Tabs
+      index={tabIndex}
+      onChange={setTabIndex}
+      variant="enclosed"
+      colorScheme=""
+      isFitted
+    >
       <TabList mb="4">
         <Tab>
           <Icon as={FiImage} mr={2} /> Foto
@@ -38,11 +55,32 @@ export function SourceSelector({
           />
         </TabPanel>
         <TabPanel padding={0}>
-          <Flex minH={{ base: "120px", md: "280px" }}>
-            <Camera
-              fileOrigin="comparison"
-              onFaceDetected={onImageCapture}
-            />
+          <Flex minH={{ base: "120px", md: "280px" }} position="relative">
+            <RenderIf condition={isMobile}>
+              <Box
+                position="fixed"
+                inset={0}
+                zIndex={9}
+                bg="black"
+                w="100vw"
+                h="100dvh"
+              >
+                <Camera
+                  fileOrigin="comparison"
+                  onFaceDetected={onImageCapture}
+                  onCancel={handleCancelCamera}
+                />
+              </Box>
+            </RenderIf>
+            <RenderIf condition={!isMobile}>
+              <Box w="100%" maxW="343px" bg="black" overflow="hidden">
+                <Camera
+                  fileOrigin="comparison"
+                  onFaceDetected={onImageCapture}
+                  onCancel={handleCancelCamera}
+                />
+              </Box>
+            </RenderIf>
           </Flex>
         </TabPanel>
       </TabPanels>

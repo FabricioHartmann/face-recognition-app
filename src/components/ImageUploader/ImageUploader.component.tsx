@@ -35,6 +35,7 @@ export function ImageUploader({
   return (
     <Box
       width={"100%"}
+      maxW={"480px"}
       height={"100%"}
       borderColor={isDragging ? "blue.300" : "gray.300"}
       transition="0.2s"

@@ -152,7 +152,7 @@ export function Scanner() {
             <Box
               position="relative"
               bg="black"
-              h={{ base: "calc(50vh - 108px)", md: "339px" }}
+              h={{ base: "calc(50vh - 114px)", md: "339px" }}
               display="flex"
               justifyContent="center"
               alignItems="center"
@@ -232,7 +232,7 @@ export function Scanner() {
                     <Box
                       position="relative"
                       display="inline-block"
-                      h={{ base: "calc(50vh - 108px)", md: "340px" }}
+                      h={{ base: "calc(50vh - 114px)", md: "340px" }}
                     >
                       <Image
                         as="img"
