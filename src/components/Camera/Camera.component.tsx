@@ -2,14 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { FiRefreshCw, FiTarget } from "react-icons/fi";
-import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 import { base64ToFile } from "../../utils/imageManipulators/base64ToFile";
 import { RenderIf } from "../RenderIf";
 import { faceApiOptions } from "../../utils/faceApiManipulators/faceApiDefaultOptions";
 import type { CameraProps } from "./Camera.types";
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
-export function Camera({ onFaceDetected, fileOrigin }: CameraProps) {
+export function Camera({ onFaceDetected, onCancel, fileOrigin }: CameraProps) {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [cameraError, setCameraError] = useState(false);
@@ -17,6 +16,7 @@ export function Camera({ onFaceDetected, fileOrigin }: CameraProps) {
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
     "environment"
   );
+
   const webcamRef = useRef<Webcam>(null);
   const detectionIntervalRef = useRef<number | null>(null);
   const hasDetectedRef = useRef(false);
@@ -81,53 +81,53 @@ export function Camera({ onFaceDetected, fileOrigin }: CameraProps) {
 
       <Flex direction="column" gap={2}>
         <Flex
-          position="relative"
-          justify="center"
-          align="center"
-          bg="black"
-          maxH="220px"
+          position="absolute"
+          right={2}
+          bottom={2}
+          direction="column"
+          gap={2}
+          zIndex={10}
         >
-          <Webcam
-            audio={false}
-            height="240px"
-            width="240px"
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={{ facingMode }}
-            onUserMedia={() => setIsLoading(false)}
-            onUserMediaError={handleCameraError}
-          />
-
           <RenderIf condition={isMobile}>
             <Button
-              position="absolute"
-              bottom={2}
-              right={2}
               size="sm"
+              width={128}
               onClick={() =>
                 setFacingMode((prev) =>
                   prev === "user" ? "environment" : "user"
                 )
               }
             >
-              <FiRefreshCw />
+              Mudar câmera
             </Button>
           </RenderIf>
-        </Flex>
 
-        <RenderIf condition={!cameraError}>
+          <RenderIf condition={isMobile}>
+            <Button onClick={onCancel} width={128} size="sm" colorScheme="red">
+              Cancelar
+            </Button>
+          </RenderIf>
           <Button
-            size="sm"
-            width="100%"
-            colorScheme="green"
-            leftIcon={<FiTarget />}
-            isLoading={isDetecting}
-            loadingText="Detectando rosto..."
             onClick={startDetection}
+            size="sm"
+            width={128}
+            colorScheme="green"
+            isLoading={isDetecting}
+            loadingText="Detectando..."
           >
-            Detectar em tempo real
+            Detectar rosto
           </Button>
-        </RenderIf>
+        </Flex>
+        <Flex align="center" bg="black">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            videoConstraints={{ facingMode }}
+            onUserMedia={() => setIsLoading(false)}
+            onUserMediaError={handleCameraError}
+          />
+        </Flex>
 
         <RenderIf condition={cameraError}>
           <Box>
