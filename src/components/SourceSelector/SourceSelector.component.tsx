@@ -57,7 +57,14 @@ export function SourceSelector({
         <TabPanel padding={0}>
           <Flex minH={{ base: "120px", md: "280px" }} position="relative">
             <RenderIf condition={isMobile}>
-              <Box position="fixed" inset={0} zIndex={9} bg="black">
+              <Box
+                position="fixed"
+                inset={0}
+                zIndex={9}
+                bg="black"
+                w="100vw"
+                h="100dvh"
+              >
                 <Camera
                   fileOrigin="comparison"
                   onFaceDetected={onImageCapture}
